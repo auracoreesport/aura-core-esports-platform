@@ -417,10 +417,9 @@ footer {
             </button>
 
         </form>
-
-        <div class="switch" onclick="switchAuth()" id="switchText">
-            Don't have an account? Register
-        </div>
+<button type="button" class="switch" id="switchText">
+    Don't have an account? Register
+</button>
 
     </div>
 
@@ -555,11 +554,18 @@ function switchAuth() {
     document.getElementById("username").style.display =
         registerMode ? "block" : "none";
 
+    document.getElementById("username").required =
+        registerMode;
+
     document.getElementById("switchText").textContent =
         registerMode
             ? "Already have an account? Login"
             : "Don't have an account? Register";
 }
+
+document.getElementById("switchText").addEventListener("click", function() {
+    switchAuth();
+});
 
 document.getElementById("authForm").addEventListener("submit", async function(e) {
 
