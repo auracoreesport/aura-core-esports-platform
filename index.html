@@ -34,18 +34,18 @@ nav {
 .logo {
     font-size: 24px;
     font-weight: 900;
-    letter-spacing: 1px;
 }
 
 .logo span {
     color: #9b5cff;
 }
 
-nav button {
+nav button,
+.primary {
     background: #9b5cff;
     color: white;
     border: none;
-    padding: 11px 20px;
+    padding: 12px 22px;
     border-radius: 8px;
     cursor: pointer;
     font-weight: bold;
@@ -98,21 +98,11 @@ h1 span {
     margin-top: 30px;
 }
 
-.primary,
 .secondary {
     padding: 14px 25px;
     border-radius: 9px;
-    border: none;
     cursor: pointer;
     font-weight: bold;
-}
-
-.primary {
-    background: #9b5cff;
-    color: white;
-}
-
-.secondary {
     background: transparent;
     color: white;
     border: 1px solid #41394d;
@@ -127,23 +117,26 @@ section {
     margin-bottom: 35px;
 }
 
-.games {
+.games,
+.tournaments {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 20px;
 }
 
-.game {
+.game,
+.tournament {
     background: #100d17;
     border: 1px solid #26212f;
     border-radius: 15px;
     padding: 30px;
-    transition: .2s;
 }
 
-.game:hover {
-    transform: translateY(-5px);
+.game:hover,
+.tournament:hover {
     border-color: #9b5cff;
+    transform: translateY(-4px);
+    transition: .2s;
 }
 
 .game-icon {
@@ -156,21 +149,10 @@ section {
     margin-bottom: 10px;
 }
 
-.game p {
+.game p,
+.tournament p {
     color: #9f99aa;
-}
-
-.tournaments {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-}
-
-.tournament {
-    background: #100d17;
-    border: 1px solid #26212f;
-    padding: 25px;
-    border-radius: 15px;
+    line-height: 1.7;
 }
 
 .status {
@@ -182,11 +164,6 @@ section {
 
 .tournament h3 {
     margin-bottom: 10px;
-}
-
-.tournament p {
-    color: #9f99aa;
-    line-height: 1.7;
 }
 
 footer {
@@ -229,7 +206,7 @@ footer {
     border-radius: 7px;
 }
 
-.modal-box button {
+.modal-box button[type="submit"] {
     width: 100%;
     padding: 13px;
     background: #9b5cff;
@@ -248,10 +225,17 @@ footer {
 }
 
 .switch {
-    text-align: center;
+    width: 100%;
     margin-top: 15px;
+    background: transparent;
     color: #aaa;
+    border: none;
     cursor: pointer;
+    font-size: 14px;
+}
+
+.switch:hover {
+    color: #9b5cff;
 }
 
 @media(max-width: 800px) {
@@ -282,6 +266,7 @@ footer {
 
 <section class="hero">
     <div class="hero-content">
+
         <div class="badge">AURA CORE ESPORTS</div>
 
         <h1>
@@ -300,10 +285,12 @@ footer {
                 GET STARTED
             </button>
 
-            <button class="secondary" onclick="document.getElementById('games').scrollIntoView()">
+            <button class="secondary"
+                onclick="document.getElementById('games').scrollIntoView()">
                 EXPLORE GAMES
             </button>
         </div>
+
     </div>
 </section>
 
@@ -347,7 +334,7 @@ footer {
             <p>
                 4-player squads<br>
                 Multiple matches<br>
-                Registration coming soon
+                Aura Core Esports
             </p>
         </div>
 
@@ -357,7 +344,7 @@ footer {
             <p>
                 4-player squads<br>
                 Competitive matches<br>
-                Registration coming soon
+                Aura Core Esports
             </p>
         </div>
 
@@ -367,7 +354,7 @@ footer {
             <p>
                 5-player teams<br>
                 Competitive matches<br>
-                Registration coming soon
+                Aura Core Esports
             </p>
         </div>
 
@@ -381,6 +368,9 @@ footer {
     © 2026 Aura Core Esports • Compete. Conquer. Create.
 </footer>
 
+
+<!-- LOGIN / REGISTER MODAL -->
+
 <div class="modal" id="authModal">
 
     <div class="modal-box">
@@ -390,6 +380,13 @@ footer {
         <h2 id="authTitle">Login</h2>
 
         <form id="authForm">
+
+            <input
+                type="text"
+                id="username"
+                placeholder="Username"
+                style="display:none"
+            >
 
             <input
                 type="email"
@@ -405,288 +402,115 @@ footer {
                 required
             >
 
-            <input
-                type="text"
-                id="username"
-                placeholder="Username"
-                style="display:none"
-            >
-
             <button type="submit" id="authButton">
                 LOGIN
             </button>
 
         </form>
-<button type="button" class="switch" id="switchText">
-    Don't have an account? Register
-</button>
+
+        <button type="button" class="switch" id="switchText">
+            Don't have an account? Register
+        </button>
 
     </div>
 
 </div>
 
-<script>
 
-let registerMode = false;
+<!-- SUPABASE -->
 
-function openAuth() {
-    document.getElementById("authModal").style.display = "flex";
-}
-
-function closeAuth() {
-    document.getElementById("authModal").style.display = "none";
-}
-
- function switchAuth() {
-    registerMode = !registerMode;
-
-    const title = document.getElementById("authTitle");
-    const button = document.getElementById("authButton");
-    const username = document.getElementById("username");
-    const switchText = document.getElementById("switchText");
-
-    if (registerMode) {
-        title.textContent = "Create Account";
-        button.textContent = "CREATE ACCOUNT";
-        username.style.display = "block";
-        username.required = true;
-        switchText.textContent = "Already have an account? Login";
-    } else {
-        title.textContent = "Login";
-        button.textContent = "LOGIN";
-        username.style.display = "none";
-        username.required = false;
-        switchText.textContent = "Don't have an account? Register";
-    }
-} 
-
-document.getElementById("authForm").addEventListener("submit", async function(e) {
-
-    e.preventDefault();
-
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
-    const username = document.getElementById("username").value.trim();
-
-    const button = document.getElementById("authButton");
-
-    button.disabled = true;
-    button.textContent = registerMode ? "CREATING..." : "LOGGING IN...";
-
-    try {
-
-        if (registerMode) {
-
-            if (!username) {
-                throw new Error("Please enter a username.");
-            }
-
-            const { data, error } = await supabaseClient.auth.signUp({
-                email: email,
-                password: password,
-                options: {
-                    data: {
-                        username: username
-                    }
-                }
-            });
-
-            if (error) throw error;
-
-            alert("Account created! Check your email to verify your account.");
-
-        } else {
-
-            const { data, error } =
-                await supabaseClient.auth.signInWithPassword({
-                    email: email,
-                    password: password
-                });
-
-            if (error) throw error;
-
-            alert("Login successful! Welcome to Aura Core.");
-
-            closeAuth();
-        }
-
-    } catch (error) {
-
-        alert(error.message);
-
-    } finally {
-
-        button.disabled = false;
-        button.textContent =
-            registerMode ? "CREATE ACCOUNT" : "LOGIN";
-    }
-
-});
-
-    const SUPABASE_URL = "https://lhwwplkxegkedlcgdxil.supabase.co";
-
-const SUPABASE_KEY = "sb_publishable_aQlhnCTO4O1iRDqdoqWBzQ_-75xuvVc";
-
-const supabaseClient = supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-);
-
-
-function openAuth() {
-    document.getElementById("authModal").style.display = "flex";
-}
-
-function closeAuth() {
-    document.getElementById("authModal").style.display = "none";
-}
-
-function switchAuth() {
-    registerMode = !registerMode;
-
-    document.getElementById("authTitle").textContent =
-        registerMode ? "Create Account" : "Login";
-
-    document.getElementById("authButton").textContent =
-        registerMode ? "CREATE ACCOUNT" : "LOGIN";
-
-    document.getElementById("username").style.display =
-        registerMode ? "block" : "none";
-
-    document.getElementById("username").required =
-        registerMode;
-
-    document.getElementById("switchText").textContent =
-        registerMode
-            ? "Already have an account? Login"
-            : "Don't have an account? Register";
-}
-
-document.getElementById("switchText").addEventListener("click", function() {
-    switchAuth();
-});
-
-document.getElementById("authForm").addEventListener("submit", async function(e) {
-
-    e.preventDefault();
-
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
-    const username = document.getElementById("username").value.trim();
-
-    const button = document.getElementById("authButton");
-
-    button.disabled = true;
-
-    try {
-
-        if (registerMode) {
-
-            if (!username) {
-                alert("Please enter a username.");
-                return;
-            }
-
-            if (password.length < 6) {
-                alert("Password must be at least 6 characters.");
-                return;
-            }
-
-            const { data, error } =
-                await supabaseClient.auth.signUp({
-                    email: email,
-                    password: password,
-                    options: {
-                        data: {
-                            username: username
-                        }
-                    }
-                });
-
-            if (error) {
-                throw error;
-            }
-
-            alert(
-                "Account created successfully! Check your email for verification."
-            );
-
-            document.getElementById("authForm").reset();
-            registerMode = false;
-            switchAuth();
-            closeAuth();
-
-        } else {
-
-            const { data, error } =
-                await supabaseClient.auth.signInWithPassword({
-                    email: email,
-                    password: password
-                });
-
-            if (error) {
-                throw error;
-            }
-
-            alert("Login successful! Welcome to Aura Core Esports.");
-
-            closeAuth();
-        }
-
-    } catch (error) {
-
-        alert("Error: " + error.message);
-
-    } finally {
-
-        button.disabled = false;
-
-        button.textContent =
-            registerMode ? "CREATE ACCOUNT" : "LOGIN";
-    }
-
-}); 
-
-});
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-const SUPABASE_URL = "https://lhwwplkxegkedlcgdxil.supabase.co";
 
-const SUPABASE_KEY = "sb_publishable_aQlhnCTO4O1iRDqdoqWBzQ_-75xuvVc";
+const SUPABASE_URL =
+    "https://lhwwplkxegkedlcgdxil.supabase.co";
 
-const supabaseClient = supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
+const SUPABASE_KEY =
+    "sb_publishable_aQlhnCTO4O1iRDqdoqWBzQ_-75xuvVc";
+
+const supabaseClient =
+    supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+let registerMode = false;
+
+
+/* OPEN LOGIN */
+
+function openAuth() {
+
+    document.getElementById("authModal").style.display = "flex";
+
+}
+
+
+/* CLOSE LOGIN */
+
+function closeAuth() {
+
+    document.getElementById("authModal").style.display = "none";
+
+}
+
+
+/* LOGIN / REGISTER SWITCH */
+
+document.getElementById("switchText").addEventListener(
+    "click",
+    function() {
+
+        registerMode = !registerMode;
+
+        const title =
+            document.getElementById("authTitle");
+
+        const button =
+            document.getElementById("authButton");
+
+        const username =
+            document.getElementById("username");
+
+        const switchText =
+            document.getElementById("switchText");
+
+
+        if (registerMode) {
+
+            title.textContent = "Create Account";
+
+            button.textContent = "CREATE ACCOUNT";
+
+            username.style.display = "block";
+
+            username.required = true;
+
+            switchText.textContent =
+                "Already have an account? Login";
+
+        } else {
+
+            title.textContent = "Login";
+
+            button.textContent = "LOGIN";
+
+            username.style.display = "none";
+
+            username.required = false;
+
+            switchText.textContent =
+                "Don't have an account? Register";
+
+        }
+
+    }
 );
 
 
-function openAuth() {
-    document.getElementById("authModal").style.display = "flex";
-}
-
-function closeAuth() {
-    document.getElementById("authModal").style.display = "none";
-}
-
-function switchAuth() {
-
-    registerMode = !registerMode;
-
-    document.getElementById("authTitle").textContent =
-        registerMode ? "Create Account" : "Login";
-
-    document.getElementById("authButton").textContent =
-        registerMode ? "CREATE ACCOUNT" : "LOGIN";
-
-    document.getElementById("username").style.display =
-        registerMode ? "block" : "none";
-
-    document.getElementById("switchText").textContent =
-        registerMode
-            ? "Already have an account? Login"
-            : "Don't have an account? Register";
-}
+/* LOGIN / REGISTER */
 
 document.getElementById("authForm").addEventListener(
     "submit",
@@ -706,67 +530,123 @@ document.getElementById("authForm").addEventListener(
         const button =
             document.getElementById("authButton");
 
+
         button.disabled = true;
 
+
         try {
+
+            /* REGISTER */
 
             if (registerMode) {
 
                 if (!username) {
-                    alert("Please enter a username.");
-                    return;
+
+                    throw new Error(
+                        "Please enter a username."
+                    );
+
                 }
 
                 if (password.length < 6) {
-                    alert("Password must be at least 6 characters.");
-                    return;
+
+                    throw new Error(
+                        "Password must be at least 6 characters."
+                    );
+
                 }
+
 
                 const { error } =
                     await supabaseClient.auth.signUp({
+
                         email: email,
+
                         password: password,
+
                         options: {
+
                             data: {
                                 username: username
                             }
+
                         }
+
                     });
 
-                if (error) throw error;
+
+                if (error) {
+                    throw error;
+                }
+
 
                 alert(
-                    "Account created successfully! Check your email."
+                    "Account created successfully! Check your email for verification."
                 );
 
-                document.getElementById("authForm").reset();
+
+                document
+                    .getElementById("authForm")
+                    .reset();
+
 
                 registerMode = false;
 
-                switchAuth();
+                document.getElementById("authTitle")
+                    .textContent = "Login";
 
-                closeAuth();
+                document.getElementById("authButton")
+                    .textContent = "LOGIN";
 
-            } else {
+                document.getElementById("username")
+                    .style.display = "none";
+
+                document.getElementById("username")
+                    .required = false;
+
+                document.getElementById("switchText")
+                    .textContent =
+                    "Don't have an account? Register";
+
+
+            }
+
+
+            /* LOGIN */
+
+            else {
 
                 const { error } =
-                    await supabaseClient.auth.signInWithPassword({
+                    await supabaseClient.auth
+                    .signInWithPassword({
+
                         email: email,
+
                         password: password
+
                     });
 
-                if (error) throw error;
+
+                if (error) {
+                    throw error;
+                }
+
 
                 alert(
                     "Login successful! Welcome to Aura Core Esports."
                 );
 
                 closeAuth();
+
             }
+
 
         } catch (error) {
 
-            alert("Error: " + error.message);
+            alert(
+                "Error: " + error.message
+            );
+
 
         } finally {
 
@@ -776,11 +656,13 @@ document.getElementById("authForm").addEventListener(
                 registerMode
                     ? "CREATE ACCOUNT"
                     : "LOGIN";
+
         }
 
     }
 );
 
-</script> 
+</script>
+
 </body>
 </html>
