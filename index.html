@@ -457,7 +457,68 @@ function switchAuth() {
         : "Don't have an account? Register";
 }
 
-document.getElementById("authForm").addEventListener("submit", function(e) {
+document.getElementById("authForm").addEventListener("submit", async function(e) {
+
+    e.preventDefault();
+
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+    const username = document.getElementById("username").value.trim();
+
+    const button = document.getElementById("authButton");
+
+    button.disabled = true;
+    button.textContent = registerMode ? "CREATING..." : "LOGGING IN...";
+
+    try {
+
+        if (registerMode) {
+
+            if (!username) {
+                throw new Error("Please enter a username.");
+            }
+
+            const { data, error } = await supabaseClient.auth.signUp({
+                email: email,
+                password: password,
+                options: {
+                    data: {
+                        username: username
+                    }
+                }
+            });
+
+            if (error) throw error;
+
+            alert("Account created! Check your email to verify your account.");
+
+        } else {
+
+            const { data, error } =
+                await supabaseClient.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+
+            if (error) throw error;
+
+            alert("Login successful! Welcome to Aura Core.");
+
+            closeAuth();
+        }
+
+    } catch (error) {
+
+        alert(error.message);
+
+    } finally {
+
+        button.disabled = false;
+        button.textContent =
+            registerMode ? "CREATE ACCOUNT" : "LOGIN";
+    }
+
+});
 
     e.preventDefault();
 
@@ -468,8 +529,15 @@ document.getElementById("authForm").addEventListener("submit", function(e) {
     );
 
 });
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </script>
+const SUPABASE_URL = "https://lhwwplkxegkedlcgdxil.supabase.co";
 
+const SUPABASE_KEY = const SUPABASE_KEY = "sb_publishable_aQlhnCTO4O1iRDqdoqWBzQ_-75xuvVc";
+
+const supabaseClient = supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
 </body>
 </html>
