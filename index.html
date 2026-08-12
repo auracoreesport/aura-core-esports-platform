@@ -438,24 +438,28 @@ function closeAuth() {
     document.getElementById("authModal").style.display = "none";
 }
 
-function switchAuth() {
-
+ function switchAuth() {
     registerMode = !registerMode;
 
-    document.getElementById("authTitle").textContent =
-        registerMode ? "Create Account" : "Login";
+    const title = document.getElementById("authTitle");
+    const button = document.getElementById("authButton");
+    const username = document.getElementById("username");
+    const switchText = document.getElementById("switchText");
 
-    document.getElementById("authButton").textContent =
-        registerMode ? "CREATE ACCOUNT" : "LOGIN";
-
-    document.getElementById("username").style.display =
-        registerMode ? "block" : "none";
-
-    document.getElementById("switchText").textContent =
-        registerMode
-        ? "Already have an account? Login"
-        : "Don't have an account? Register";
-}
+    if (registerMode) {
+        title.textContent = "Create Account";
+        button.textContent = "CREATE ACCOUNT";
+        username.style.display = "block";
+        username.required = true;
+        switchText.textContent = "Already have an account? Login";
+    } else {
+        title.textContent = "Login";
+        button.textContent = "LOGIN";
+        username.style.display = "none";
+        username.required = false;
+        switchText.textContent = "Don't have an account? Register";
+    }
+} 
 
 document.getElementById("authForm").addEventListener("submit", async function(e) {
 
