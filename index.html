@@ -1,366 +1,424 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Aura Core Esports</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<style>
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
-}
+    <title>Aura Core Esports</title>
 
-body {
-    background: #08070d;
-    color: white;
-}
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-nav {
-    height: 70px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 7%;
-    background: #0d0b14;
-    border-bottom: 1px solid #24202f;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-}
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
 
-.logo {
-    font-size: 24px;
-    font-weight: 900;
-}
+        body {
+            background: #08070d;
+            color: white;
+        }
 
-.logo span {
-    color: #9b5cff;
-}
+        nav {
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 7%;
+            background: #0d0b14;
+            border-bottom: 1px solid #24202f;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
 
-nav button,
-.primary {
-    background: #9b5cff;
-    color: white;
-    border: none;
-    padding: 12px 22px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-}
+        .logo {
+            font-size: 24px;
+            font-weight: 900;
+            letter-spacing: 1px;
+        }
 
-.hero {
-    min-height: 75vh;
-    display: flex;
-    align-items: center;
-    padding: 70px 8%;
-    background:
-        radial-gradient(circle at 75% 40%, #3c176d 0, transparent 35%),
-        #08070d;
-}
+        .logo span {
+            color: #9b5cff;
+        }
 
-.hero-content {
-    max-width: 700px;
-}
+        button {
+            cursor: pointer;
+        }
 
-.badge {
-    display: inline-block;
-    background: #191322;
-    border: 1px solid #6c3caf;
-    padding: 8px 14px;
-    border-radius: 30px;
-    color: #c79cff;
-    margin-bottom: 20px;
-}
+        .nav-button {
+            background: #9b5cff;
+            color: white;
+            border: none;
+            padding: 11px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
 
-h1 {
-    font-size: clamp(45px, 7vw, 85px);
-    line-height: .95;
-    margin-bottom: 25px;
-}
+        .hero {
+            min-height: 75vh;
+            display: flex;
+            align-items: center;
+            padding: 70px 8%;
+            background:
+                radial-gradient(circle at 75% 40%, #3c176d 0, transparent 35%),
+                #08070d;
+        }
 
-h1 span {
-    color: #9b5cff;
-}
+        .hero-content {
+            max-width: 700px;
+        }
 
-.hero p {
-    color: #aaa4b5;
-    font-size: 18px;
-    line-height: 1.6;
-    max-width: 600px;
-}
+        .badge {
+            display: inline-block;
+            background: #191322;
+            border: 1px solid #6c3caf;
+            padding: 8px 14px;
+            border-radius: 30px;
+            color: #c79cff;
+            margin-bottom: 20px;
+        }
 
-.hero-buttons {
-    display: flex;
-    gap: 15px;
-    margin-top: 30px;
-}
+        h1 {
+            font-size: clamp(45px, 7vw, 85px);
+            line-height: .95;
+            margin-bottom: 25px;
+        }
 
-.secondary {
-    padding: 14px 25px;
-    border-radius: 9px;
-    cursor: pointer;
-    font-weight: bold;
-    background: transparent;
-    color: white;
-    border: 1px solid #41394d;
-}
+        h1 span {
+            color: #9b5cff;
+        }
 
-section {
-    padding: 70px 8%;
-}
+        .hero p {
+            color: #aaa4b5;
+            font-size: 18px;
+            line-height: 1.6;
+            max-width: 600px;
+        }
 
-.section-title {
-    font-size: 35px;
-    margin-bottom: 35px;
-}
+        .hero-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
 
-.games,
-.tournaments {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-}
+        .primary,
+        .secondary {
+            padding: 14px 25px;
+            border-radius: 9px;
+            font-weight: bold;
+        }
 
-.game,
-.tournament {
-    background: #100d17;
-    border: 1px solid #26212f;
-    border-radius: 15px;
-    padding: 30px;
-}
+        .primary {
+            background: #9b5cff;
+            color: white;
+            border: none;
+        }
 
-.game:hover,
-.tournament:hover {
-    border-color: #9b5cff;
-    transform: translateY(-4px);
-    transition: .2s;
-}
+        .secondary {
+            background: transparent;
+            color: white;
+            border: 1px solid #41394d;
+        }
 
-.game-icon {
-    font-size: 45px;
-    margin-bottom: 20px;
-}
+        section {
+            padding: 70px 8%;
+        }
 
-.game h3 {
-    font-size: 25px;
-    margin-bottom: 10px;
-}
+        .section-title {
+            font-size: 35px;
+            margin-bottom: 35px;
+        }
 
-.game p,
-.tournament p {
-    color: #9f99aa;
-    line-height: 1.7;
-}
+        .games,
+        .tournaments {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
 
-.status {
-    color: #6cff9b;
-    font-size: 13px;
-    font-weight: bold;
-    margin-bottom: 15px;
-}
+        .game,
+        .tournament {
+            background: #100d17;
+            border: 1px solid #26212f;
+            border-radius: 15px;
+            padding: 30px;
+        }
 
-.tournament h3 {
-    margin-bottom: 10px;
-}
+        .game:hover,
+        .tournament:hover {
+            border-color: #9b5cff;
+            transform: translateY(-3px);
+            transition: .2s;
+        }
 
-footer {
-    text-align: center;
-    padding: 35px;
-    color: #77717f;
-    border-top: 1px solid #24202f;
-}
+        .game-icon {
+            font-size: 45px;
+            margin-bottom: 20px;
+        }
 
-.modal {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,.8);
-    align-items: center;
-    justify-content: center;
-    z-index: 100;
-}
+        .game h3,
+        .tournament h3 {
+            font-size: 25px;
+            margin-bottom: 10px;
+        }
 
-.modal-box {
-    width: 90%;
-    max-width: 430px;
-    background: #100d17;
-    border: 1px solid #352c43;
-    padding: 30px;
-    border-radius: 15px;
-}
+        .game p,
+        .tournament p {
+            color: #9f99aa;
+            line-height: 1.7;
+        }
 
-.modal-box h2 {
-    margin-bottom: 20px;
-}
+        .status {
+            color: #6cff9b;
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
 
-.modal-box input {
-    width: 100%;
-    padding: 13px;
-    margin-bottom: 12px;
-    background: #08070d;
-    border: 1px solid #332c3c;
-    color: white;
-    border-radius: 7px;
-}
+        footer {
+            text-align: center;
+            padding: 35px;
+            color: #77717f;
+            border-top: 1px solid #24202f;
+        }
 
-.modal-box button[type="submit"] {
-    width: 100%;
-    padding: 13px;
-    background: #9b5cff;
-    color: white;
-    border: none;
-    border-radius: 7px;
-    font-weight: bold;
-    cursor: pointer;
-}
+        /* MODAL */
 
-.close {
-    float: right;
-    cursor: pointer;
-    color: #aaa;
-    font-size: 20px;
-}
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .82);
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
 
-.switch {
-    width: 100%;
-    margin-top: 15px;
-    background: transparent;
-    color: #aaa;
-    border: none;
-    cursor: pointer;
-    font-size: 14px;
-}
+        .modal-box {
+            width: 90%;
+            max-width: 430px;
+            background: #100d17;
+            border: 1px solid #352c43;
+            padding: 30px;
+            border-radius: 15px;
+        }
 
-.switch:hover {
-    color: #9b5cff;
-}
+        .modal-box h2 {
+            margin-bottom: 20px;
+        }
 
-@media(max-width: 800px) {
-    .games,
-    .tournaments {
-        grid-template-columns: 1fr;
-    }
+        .close {
+            float: right;
+            cursor: pointer;
+            color: #aaa;
+            font-size: 25px;
+        }
 
-    nav {
-        padding: 0 5%;
-    }
+        .modal-box input {
+            width: 100%;
+            padding: 13px;
+            margin-bottom: 12px;
+            background: #08070d;
+            border: 1px solid #332c3c;
+            color: white;
+            border-radius: 7px;
+            outline: none;
+        }
 
-    .hero {
-        padding: 60px 6%;
-    }
-}
-</style>
+        .modal-box input:focus {
+            border-color: #9b5cff;
+        }
+
+        .auth-button {
+            width: 100%;
+            padding: 13px;
+            background: #9b5cff;
+            color: white;
+            border: none;
+            border-radius: 7px;
+            font-weight: bold;
+        }
+
+        .switch {
+            width: 100%;
+            background: none;
+            border: none;
+            text-align: center;
+            margin-top: 15px;
+            color: #aaa;
+            font-size: 14px;
+        }
+
+        .switch:hover {
+            color: #c79cff;
+        }
+
+        .message {
+            margin-top: 15px;
+            text-align: center;
+            font-size: 14px;
+            color: #c79cff;
+            min-height: 20px;
+        }
+
+        @media (max-width: 800px) {
+            .games,
+            .tournaments {
+                grid-template-columns: 1fr;
+            }
+
+            nav {
+                padding: 0 5%;
+            }
+
+            .hero {
+                padding: 60px 6%;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
 <nav>
-    <div class="logo">AURA <span>CORE</span></div>
-    <button id="navAuthButton" onclick="handleAuthButton()">LOGIN</button>
+    <div class="logo">
+        AURA <span>CORE</span>
+    </div>
+
+    <button class="nav-button" id="navAuthButton">
+        LOGIN
+    </button>
 </nav>
 
 <main>
 
-<section class="hero">
-    <div class="hero-content">
+    <section class="hero">
+        <div class="hero-content">
 
-        <div class="badge">AURA CORE ESPORTS</div>
+            <div class="badge">
+                AURA CORE ESPORTS
+            </div>
 
-        <h1>
-            COMPETE.<br>
-            <span>CONQUER.</span><br>
-            CREATE.
-        </h1>
+            <h1>
+                COMPETE.<br>
+                <span>CONQUER.</span><br>
+                CREATE.
+            </h1>
 
-        <p>
-            Compete in tournaments, build your team, track your matches
-            and climb the leaderboard.
-        </p>
-
-        <div class="hero-buttons">
-            <button class="primary" onclick="openAuth()">
-                GET STARTED
-            </button>
-
-            <button class="secondary"
-                onclick="document.getElementById('games').scrollIntoView()">
-                EXPLORE GAMES
-            </button>
-        </div>
-
-    </div>
-</section>
-
-<section id="games">
-
-    <h2 class="section-title">SUPPORTED GAMES</h2>
-
-    <div class="games">
-
-        <div class="game">
-            <div class="game-icon">🔥</div>
-            <h3>Free Fire</h3>
-            <p>Squad tournaments • 4 players per team</p>
-        </div>
-
-        <div class="game">
-            <div class="game-icon">🎯</div>
-            <h3>BGMI</h3>
-            <p>Squad tournaments • 4 players per team</p>
-        </div>
-
-        <div class="game">
-            <div class="game-icon">⚡</div>
-            <h3>Valorant</h3>
-            <p>Competitive tournaments • 5 players per team</p>
-        </div>
-
-    </div>
-
-</section>
-
-<section>
-
-    <h2 class="section-title">UPCOMING TOURNAMENTS</h2>
-
-    <div class="tournaments">
-
-        <div class="tournament">
-            <div class="status">● REGISTRATION OPEN</div>
-            <h3>Free Fire Tournament</h3>
             <p>
-                4-player squads<br>
-                Multiple matches<br>
-                Aura Core Esports
+                Compete in tournaments, build your team,
+                track your matches and climb the leaderboard.
             </p>
+
+            <div class="hero-buttons">
+
+                <button class="primary" id="heroStartButton">
+                    GET STARTED
+                </button>
+
+                <button class="secondary" id="exploreButton">
+                    EXPLORE GAMES
+                </button>
+
+            </div>
         </div>
+    </section>
 
-        <div class="tournament">
-            <div class="status">● REGISTRATION OPEN</div>
-            <h3>BGMI Tournament</h3>
-            <p>
-                4-player squads<br>
-                Competitive matches<br>
-                Aura Core Esports
-            </p>
+    <section id="games">
+
+        <h2 class="section-title">
+            SUPPORTED GAMES
+        </h2>
+
+        <div class="games">
+
+            <div class="game">
+                <div class="game-icon">🔥</div>
+                <h3>Free Fire</h3>
+                <p>
+                    Squad tournaments • 4 players per team
+                </p>
+            </div>
+
+            <div class="game">
+                <div class="game-icon">🎯</div>
+                <h3>BGMI</h3>
+                <p>
+                    Squad tournaments • 4 players per team
+                </p>
+            </div>
+
+            <div class="game">
+                <div class="game-icon">⚡</div>
+                <h3>Valorant</h3>
+                <p>
+                    Competitive tournaments • 5 players per team
+                </p>
+            </div>
+
         </div>
+    </section>
 
-        <div class="tournament">
-            <div class="status">● REGISTRATION OPEN</div>
-            <h3>Valorant Tournament</h3>
-            <p>
-                5-player teams<br>
-                Competitive matches<br>
-                Aura Core Esports
-            </p>
+    <section>
+
+        <h2 class="section-title">
+            UPCOMING TOURNAMENTS
+        </h2>
+
+        <div class="tournaments">
+
+            <div class="tournament">
+                <div class="status">
+                    ● REGISTRATION OPEN
+                </div>
+
+                <h3>Free Fire Tournament</h3>
+
+                <p>
+                    4-player squads<br>
+                    Multiple matches<br>
+                    Registration coming soon
+                </p>
+            </div>
+
+            <div class="tournament">
+                <div class="status">
+                    ● REGISTRATION OPEN
+                </div>
+
+                <h3>BGMI Tournament</h3>
+
+                <p>
+                    4-player squads<br>
+                    Competitive matches<br>
+                    Registration coming soon
+                </p>
+            </div>
+
+            <div class="tournament">
+                <div class="status">
+                    ● REGISTRATION OPEN
+                </div>
+
+                <h3>Valorant Tournament</h3>
+
+                <p>
+                    5-player teams<br>
+                    Competitive matches<br>
+                    Registration coming soon
+                </p>
+            </div>
+
         </div>
-
-    </div>
-
-</section>
+    </section>
 
 </main>
 
@@ -369,15 +427,19 @@ footer {
 </footer>
 
 
-<!-- LOGIN / REGISTER MODAL -->
+<!-- AUTH MODAL -->
 
 <div class="modal" id="authModal">
 
     <div class="modal-box">
 
-        <span class="close" onclick="closeAuth()">×</span>
+        <span class="close" id="closeAuth">
+            ×
+        </span>
 
-        <h2 id="authTitle">Login</h2>
+        <h2 id="authTitle">
+            Login
+        </h2>
 
         <form id="authForm">
 
@@ -385,7 +447,8 @@ footer {
                 type="text"
                 id="username"
                 placeholder="Username"
-                style="display:none"
+                style="display:none;"
+                autocomplete="username"
             >
 
             <input
@@ -393,6 +456,7 @@ footer {
                 id="email"
                 placeholder="Email"
                 required
+                autocomplete="email"
             >
 
             <input
@@ -400,265 +464,458 @@ footer {
                 id="password"
                 placeholder="Password"
                 required
+                autocomplete="current-password"
             >
 
-            <button type="submit" id="authButton">
+            <button
+                type="submit"
+                class="auth-button"
+                id="authButton"
+            >
                 LOGIN
             </button>
 
         </form>
 
-        <button type="button" class="switch" id="switchText">
+        <button
+            type="button"
+            class="switch"
+            id="switchText"
+        >
             Don't have an account? Register
         </button>
 
-    </div>
+        <div class="message" id="authMessage"></div>
 
+    </div>
 </div>
 
 
-<!-- SUPABASE -->
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <script>
 
-const SUPABASE_URL =
-    "https://lhwwplkxegkedlcgdxil.supabase.co";
+    /* =========================
+       SUPABASE CONFIG
+    ========================= */
 
-const SUPABASE_KEY =
-    "sb_publishable_aQlhnCTO4O1iRDqdoqWBzQ_-75xuvVc";
+    const SUPABASE_URL =
+        "https://lhwwplkxegkedlcgdxil.supabase.co";
 
-const supabaseClient =
-    supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
-    );
+    const SUPABASE_KEY =
+        "sb_publishable_aQlhnCTO4O1iRDqdoqWBzQ_-75xuvVc";
 
-
-let registerMode = false;
-
-
-/* OPEN LOGIN */
-
-function openAuth() {
-
-    document.getElementById("authModal").style.display = "flex";
-
-}
+    const supabaseClient =
+        supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_KEY
+        );
 
 
-/* CLOSE LOGIN */
+    /* =========================
+       ELEMENTS
+    ========================= */
 
-function closeAuth() {
+    const authModal =
+        document.getElementById("authModal");
 
-    document.getElementById("authModal").style.display = "none";
+    const authForm =
+        document.getElementById("authForm");
 
-}
+    const authTitle =
+        document.getElementById("authTitle");
+
+    const authButton =
+        document.getElementById("authButton");
+
+    const switchText =
+        document.getElementById("switchText");
+
+    const usernameInput =
+        document.getElementById("username");
+
+    const emailInput =
+        document.getElementById("email");
+
+    const passwordInput =
+        document.getElementById("password");
+
+    const authMessage =
+        document.getElementById("authMessage");
+
+    const navAuthButton =
+        document.getElementById("navAuthButton");
+
+    const heroStartButton =
+        document.getElementById("heroStartButton");
+
+    const exploreButton =
+        document.getElementById("exploreButton");
+
+    const closeAuthButton =
+        document.getElementById("closeAuth");
 
 
-/* LOGIN / REGISTER SWITCH */
+    /* =========================
+       STATE
+    ========================= */
 
-document.getElementById("switchText").addEventListener(
-    "click",
-    function() {
+    let registerMode = false;
 
-        registerMode = !registerMode;
 
-        const title =
-            document.getElementById("authTitle");
+    /* =========================
+       OPEN / CLOSE AUTH
+    ========================= */
 
-        const button =
-            document.getElementById("authButton");
+    function openAuth() {
 
-        const username =
-            document.getElementById("username");
+        authModal.style.display = "flex";
 
-        const switchText =
-            document.getElementById("switchText");
+        authMessage.textContent = "";
 
+    }
+
+
+    function closeAuth() {
+
+        authModal.style.display = "none";
+
+        authMessage.textContent = "";
+
+    }
+
+
+    /* =========================
+       LOGIN / REGISTER MODE
+    ========================= */
+
+    function updateAuthMode() {
 
         if (registerMode) {
 
-            title.textContent = "Create Account";
+            authTitle.textContent =
+                "Create Account";
 
-            button.textContent = "CREATE ACCOUNT";
-
-            username.style.display = "block";
-
-            username.required = true;
+            authButton.textContent =
+                "CREATE ACCOUNT";
 
             switchText.textContent =
                 "Already have an account? Login";
 
+            usernameInput.style.display =
+                "block";
+
+            usernameInput.required = true;
+
         } else {
 
-            title.textContent = "Login";
+            authTitle.textContent =
+                "Login";
 
-            button.textContent = "LOGIN";
-
-            username.style.display = "none";
-
-            username.required = false;
+            authButton.textContent =
+                "LOGIN";
 
             switchText.textContent =
                 "Don't have an account? Register";
 
+            usernameInput.style.display =
+                "none";
+
+            usernameInput.required = false;
+
         }
 
     }
-);
 
 
-/* LOGIN / REGISTER */
+    switchText.addEventListener(
+        "click",
+        function() {
 
-document.getElementById("authForm").addEventListener(
-    "submit",
-    async function(e) {
+            registerMode =
+                !registerMode;
 
-        e.preventDefault();
+            updateAuthMode();
 
-        const email =
-            document.getElementById("email").value.trim();
-
-        const password =
-            document.getElementById("password").value;
-
-        const username =
-            document.getElementById("username").value.trim();
-
-        const button =
-            document.getElementById("authButton");
+        }
+    );
 
 
-        button.disabled = true;
+    /* =========================
+       OPEN BUTTONS
+    ========================= */
+
+    navAuthButton.addEventListener(
+        "click",
+        openAuth
+    );
 
 
-        try {
+    heroStartButton.addEventListener(
+        "click",
+        openAuth
+    );
 
-            /* REGISTER */
+
+    closeAuthButton.addEventListener(
+        "click",
+        closeAuth
+    );
+
+
+    exploreButton.addEventListener(
+        "click",
+        function() {
+
+            document
+                .getElementById("games")
+                .scrollIntoView({
+                    behavior: "smooth"
+                });
+
+        }
+    );
+
+
+    /* =========================
+       AUTH FORM
+    ========================= */
+
+    authForm.addEventListener(
+        "submit",
+        async function(event) {
+
+            event.preventDefault();
+
+            authMessage.textContent = "";
+
+            const email =
+                emailInput.value.trim();
+
+            const password =
+                passwordInput.value;
+
+            const username =
+                usernameInput.value.trim();
+
+
+            authButton.disabled = true;
+
 
             if (registerMode) {
 
-                if (!username) {
+                authButton.textContent =
+                    "CREATING...";
 
-                    throw new Error(
-                        "Please enter a username."
-                    );
+            } else {
 
-                }
+                authButton.textContent =
+                    "LOGGING IN...";
 
-                if (password.length < 6) {
-
-                    throw new Error(
-                        "Password must be at least 6 characters."
-                    );
-
-                }
+            }
 
 
-                const { error } =
-                    await supabaseClient.auth.signUp({
+            try {
 
-                        email: email,
+                /* REGISTER */
 
-                        password: password,
+                if (registerMode) {
 
-                        options: {
+                    if (!username) {
 
-                            data: {
-                                username: username
+                        throw new Error(
+                            "Please enter a username."
+                        );
+
+                    }
+
+
+                    if (password.length < 6) {
+
+                        throw new Error(
+                            "Password must be at least 6 characters."
+                        );
+
+                    }
+
+
+                    const result =
+                        await supabaseClient.auth.signUp({
+
+                            email: email,
+
+                            password: password,
+
+                            options: {
+
+                                data: {
+                                    username: username
+                                }
+
                             }
 
-                        }
-
-                    });
+                        });
 
 
-                if (error) {
-                    throw error;
+                    if (result.error) {
+
+                        throw result.error;
+
+                    }
+
+
+                    alert(
+                        "Account created successfully! You can now login."
+                    );
+
+
+                    authForm.reset();
+
+                    registerMode = false;
+
+                    updateAuthMode();
+
+                    closeAuth();
+
+
                 }
 
+                /* LOGIN */
 
-               alert("Account created successfully! You can now login."); 
-                );
+                else {
+
+                    const result =
+                        await supabaseClient.auth.signInWithPassword({
+
+                            email: email,
+
+                            password: password
+
+                        });
 
 
-                document
-                    .getElementById("authForm")
-                    .reset();
+                    if (result.error) {
+
+                        throw result.error;
+
+                    }
 
 
-                registerMode = false;
+                    alert(
+                        "Login successful! Welcome to Aura Core Esports."
+                    );
 
-                document.getElementById("authTitle")
-                    .textContent = "Login";
 
-                document.getElementById("authButton")
-                    .textContent = "LOGIN";
+                    closeAuth();
 
-                document.getElementById("username")
-                    .style.display = "none";
+                    await updateNavButton();
 
-                document.getElementById("username")
-                    .required = false;
-
-                document.getElementById("switchText")
-                    .textContent =
-                    "Don't have an account? Register";
-
+                }
 
             }
 
+            catch (error) {
 
-            /* LOGIN */
+                console.error(error);
 
-            else {
-
-                const { error } =
-                    await supabaseClient.auth
-                    .signInWithPassword({
-
-                        email: email,
-
-                        password: password
-
-                    });
-
-
-                if (error) {
-                    throw error;
-                }
-
+                authMessage.textContent =
+                    error.message;
 
                 alert(
-                    "Login successful! Welcome to Aura Core Esports."
+                    "Error: " + error.message
                 );
-
-                closeAuth();
 
             }
 
+            finally {
 
-             } catch (error) {
+                authButton.disabled = false;
 
-            alert(
-                "Error: " + error.message
-            );
+                updateAuthMode();
 
-        } finally {
+            }
 
-            button.disabled = false;
+        }
+    );
 
-            button.textContent =
-                registerMode
-                    ? "CREATE ACCOUNT"
-                    : "LOGIN";
+
+    /* =========================
+       NAV LOGIN / LOGOUT
+    ========================= */
+
+    async function updateNavButton() {
+
+        const result =
+            await supabaseClient.auth.getSession();
+
+
+        if (result.error) {
+
+            console.error(result.error);
+
+            return;
+
+        }
+
+
+        const session =
+            result.data.session;
+
+
+        if (session) {
+
+            navAuthButton.textContent =
+                "LOGOUT";
+
+            navAuthButton.onclick =
+                logoutUser;
+
+        } else {
+
+            navAuthButton.textContent =
+                "LOGIN";
+
+            navAuthButton.onclick =
+                openAuth;
 
         }
 
     }
-);
+
+
+    async function logoutUser() {
+
+        const result =
+            await supabaseClient.auth.signOut();
+
+
+        if (result.error) {
+
+            alert(
+                "Logout error: " +
+                result.error.message
+            );
+
+            return;
+
+        }
+
+
+        alert(
+            "Logged out successfully."
+        );
+
+
+        await updateNavButton();
+
+    }
+
+
+    /* =========================
+       INITIALIZE
+    ========================= */
+
+    updateAuthMode();
+
+    updateNavButton();
 
 </script>
 
