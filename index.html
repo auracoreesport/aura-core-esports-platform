@@ -1,1 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aura Core Esports</title>
 
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: #08070d;
+    color: white;
+}
+
+nav {
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 7%;
+    background: #0d0b14;
+    border-bottom: 1px solid #24202f;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: 900;
+    letter-spacing: 1px;
+}
+
+.logo span {
+    color: #9b5cff;
+}
+
+nav button {
+    background: #9b5cff;
+    color: white;
+    border: none;
+    padding: 11px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.hero {
+    min-height: 75vh;
+    display: flex;
+    align-items: center;
+    padding: 70px 8%;
+    background:
+        radial-gradient(circle at 75% 40%, #3c176d 0, transparent 35%),
+        #08070d;
+}
+
+.hero-content {
+    max-width: 700px;
+}
+
+.badge {
+    display: inline-block;
+    background: #191322;
+    border: 1px solid #6c3caf;
+    padding: 8px 14px;
+    border-radius: 30px;
+    color: #c79cff;
+    margin-bottom: 20px;
+}
+
+h1 {
+    font-size: clamp(45px, 7vw, 85px);
+    line-height: .95;
+    margin-bottom: 25px;
+}
+
+h1 span {
+    color: #9b5cff;
+}
+
+.hero p {
+    color: #aaa4b5;
+    font-size: 18px;
+    line-height: 1.6;
+    max-width: 600px;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.primary,
+.secondary {
+    padding: 14px 25px;
+    border-radius: 9px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.primary {
+    background: #9b5cff;
+    color: white;
+}
+
+.secondary {
+    background: transparent;
+    color: white;
+    border: 1px solid #41394d;
+}
+
+section {
+    padding: 70px 8%;
+}
+
+.section-title {
+    font-size: 35px;
+    margin-bottom: 35px;
+}
+
+.games {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.game {
+    background: #100d17;
+    border: 1px solid #26212f;
+    border-radius: 15px;
+    padding: 30px;
+    transition: .2s;
+}
+
+.game:hover {
+    transform: translateY(-5px);
+    border-color: #9b5cff;
+}
+
+.game-icon {
+    font-size: 45px;
+    margin-bottom: 20px;
+}
+
+.game h3 {
+    font-size: 25px;
+    margin-bottom: 10px;
+}
+
+.game p {
+    color: #9f99aa;
+}
+
+.tournaments {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.tournament {
+    background: #100d17;
+    border: 1px solid #26212f;
+    padding: 25px;
+    border-radius: 15px;
+}
+
+.status {
+    color: #6cff9b;
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.tournament h3 {
+    margin-bottom: 10px;
+}
+
+.tournament p {
+    color: #9f99aa;
+    line-height: 1.7;
+}
+
+footer {
+    text-align: center;
+    padding: 35px;
+    color: #77717f;
+    border-top: 1px solid #24202f;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.8);
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+}
+
+.modal-box {
+    width: 90%;
+    max-width: 430px;
+    background: #100d17;
+    border: 1px solid #352c43;
+    padding: 30px;
+    border-radius: 15px;
+}
+
+.modal-box h2 {
+    margin-bottom: 20px;
+}
+
+.modal-box input {
+    width: 100%;
+    padding: 13px;
+    margin-bottom: 12px;
+    background: #08070d;
+    border: 1px solid #332c3c;
+    color: white;
+    border-radius: 7px;
+}
+
+.modal-box button {
+    width: 100%;
+    padding: 13px;
+    background: #9b5cff;
+    color: white;
+    border: none;
+    border-radius: 7px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close {
+    float: right;
+    cursor: pointer;
+    color: #aaa;
+    font-size: 20px;
+}
+
+.switch {
+    text-align: center;
+    margin-top: 15px;
+    color: #aaa;
+    cursor: pointer;
+}
+
+@media(max-width: 800px) {
+    .games,
+    .tournaments {
+        grid-template-columns: 1fr;
+    }
+
+    nav {
+        padding: 0 5%;
+    }
+
+    .hero {
+        padding: 60px 6%;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<nav>
+    <div class="logo">AURA <span>CORE</span></div>
+    <button onclick="openAuth()">LOGIN</button>
+</nav>
+
+<main>
+
+<section class="hero">
+    <div class="hero-content">
+        <div class="badge">AURA CORE ESPORTS</div>
+
+        <h1>
+            COMPETE.<br>
+            <span>CONQUER.</span><br>
+            CREATE.
+        </h1>
+
+        <p>
+            Compete in tournaments, build your team, track your matches
+            and climb the leaderboard.
+        </p>
+
+        <div class="hero-buttons">
+            <button class="primary" onclick="openAuth()">
+                GET STARTED
+            </button>
+
+            <button class="secondary" onclick="document.getElementById('games').scrollIntoView()">
+                EXPLORE GAMES
+            </button>
+        </div>
+    </div>
+</section>
+
+<section id="games">
+
+    <h2 class="section-title">SUPPORTED GAMES</h2>
+
+    <div class="games">
+
+        <div class="game">
+            <div class="game-icon">🔥</div>
+            <h3>Free Fire</h3>
+            <p>Squad tournaments • 4 players per team</p>
+        </div>
+
+        <div class="game">
+            <div class="game-icon">🎯</div>
+            <h3>BGMI</h3>
+            <p>Squad tournaments • 4 players per team</p>
+        </div>
+
+        <div class="game">
+            <div class="game-icon">⚡</div>
+            <h3>Valorant</h3>
+            <p>Competitive tournaments • 5 players per team</p>
+        </div>
+
+    </div>
+
+</section>
+
+<section>
+
+    <h2 class="section-title">UPCOMING TOURNAMENTS</h2>
+
+    <div class="tournaments">
+
+        <div class="tournament">
+            <div class="status">● REGISTRATION OPEN</div>
+            <h3>Free Fire Tournament</h3>
+            <p>
+                4-player squads<br>
+                Multiple matches<br>
+                Registration coming soon
+            </p>
+        </div>
+
+        <div class="tournament">
+            <div class="status">● REGISTRATION OPEN</div>
+            <h3>BGMI Tournament</h3>
+            <p>
+                4-player squads<br>
+                Competitive matches<br>
+                Registration coming soon
+            </p>
+        </div>
+
+        <div class="tournament">
+            <div class="status">● REGISTRATION OPEN</div>
+            <h3>Valorant Tournament</h3>
+            <p>
+                5-player teams<br>
+                Competitive matches<br>
+                Registration coming soon
+            </p>
+        </div>
+
+    </div>
+
+</section>
+
+</main>
+
+<footer>
+    © 2026 Aura Core Esports • Compete. Conquer. Create.
+</footer>
+
+<div class="modal" id="authModal">
+
+    <div class="modal-box">
+
+        <span class="close" onclick="closeAuth()">×</span>
+
+        <h2 id="authTitle">Login</h2>
+
+        <form id="authForm">
+
+            <input
+                type="email"
+                id="email"
+                placeholder="Email"
+                required
+            >
+
+            <input
+                type="password"
+                id="password"
+                placeholder="Password"
+                required
+            >
+
+            <input
+                type="text"
+                id="username"
+                placeholder="Username"
+                style="display:none"
+            >
+
+            <button type="submit" id="authButton">
+                LOGIN
+            </button>
+
+        </form>
+
+        <div class="switch" onclick="switchAuth()" id="switchText">
+            Don't have an account? Register
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+let registerMode = false;
+
+function openAuth() {
+    document.getElementById("authModal").style.display = "flex";
+}
+
+function closeAuth() {
+    document.getElementById("authModal").style.display = "none";
+}
+
+function switchAuth() {
+
+    registerMode = !registerMode;
+
+    document.getElementById("authTitle").textContent =
+        registerMode ? "Create Account" : "Login";
+
+    document.getElementById("authButton").textContent =
+        registerMode ? "CREATE ACCOUNT" : "LOGIN";
+
+    document.getElementById("username").style.display =
+        registerMode ? "block" : "none";
+
+    document.getElementById("switchText").textContent =
+        registerMode
+        ? "Already have an account? Login"
+        : "Don't have an account? Register";
+}
+
+document.getElementById("authForm").addEventListener("submit", function(e) {
+
+    e.preventDefault();
+
+    alert(
+        registerMode
+        ? "Account system will be connected in the next step."
+        : "Login system will be connected in the next step."
+    );
+
+});
+
+</script>
+
+</body>
+</html>
