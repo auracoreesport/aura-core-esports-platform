@@ -520,13 +520,123 @@ document.getElementById("authForm").addEventListener("submit", async function(e)
 
 });
 
+    const SUPABASE_URL = "https://lhwwplkxegkedlcgdxil.supabase.co";
+
+const SUPABASE_KEY = "sb_publishable_aQlhnCTO4O1iRDqdoqWBzQ_-75xuvVc";
+
+const supabaseClient = supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+let registerMode = false;
+
+function openAuth() {
+    document.getElementById("authModal").style.display = "flex";
+}
+
+function closeAuth() {
+    document.getElementById("authModal").style.display = "none";
+}
+
+function switchAuth() {
+    registerMode = !registerMode;
+
+    document.getElementById("authTitle").textContent =
+        registerMode ? "Create Account" : "Login";
+
+    document.getElementById("authButton").textContent =
+        registerMode ? "CREATE ACCOUNT" : "LOGIN";
+
+    document.getElementById("username").style.display =
+        registerMode ? "block" : "none";
+
+    document.getElementById("switchText").textContent =
+        registerMode
+            ? "Already have an account? Login"
+            : "Don't have an account? Register";
+}
+
+document.getElementById("authForm").addEventListener("submit", async function(e) {
+
     e.preventDefault();
 
-    alert(
-        registerMode
-        ? "Account system will be connected in the next step."
-        : "Login system will be connected in the next step."
-    );
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+    const username = document.getElementById("username").value.trim();
+
+    const button = document.getElementById("authButton");
+
+    button.disabled = true;
+
+    try {
+
+        if (registerMode) {
+
+            if (!username) {
+                alert("Please enter a username.");
+                return;
+            }
+
+            if (password.length < 6) {
+                alert("Password must be at least 6 characters.");
+                return;
+            }
+
+            const { data, error } =
+                await supabaseClient.auth.signUp({
+                    email: email,
+                    password: password,
+                    options: {
+                        data: {
+                            username: username
+                        }
+                    }
+                });
+
+            if (error) {
+                throw error;
+            }
+
+            alert(
+                "Account created successfully! Check your email for verification."
+            );
+
+            document.getElementById("authForm").reset();
+            registerMode = false;
+            switchAuth();
+            closeAuth();
+
+        } else {
+
+            const { data, error } =
+                await supabaseClient.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+
+            if (error) {
+                throw error;
+            }
+
+            alert("Login successful! Welcome to Aura Core Esports.");
+
+            closeAuth();
+        }
+
+    } catch (error) {
+
+        alert("Error: " + error.message);
+
+    } finally {
+
+        button.disabled = false;
+
+        button.textContent =
+            registerMode ? "CREATE ACCOUNT" : "LOGIN";
+    }
+
+}); 
 
 });
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
