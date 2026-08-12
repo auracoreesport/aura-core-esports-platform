@@ -641,14 +641,13 @@ document.getElementById("authForm").addEventListener(
             }
 
 
-        } catch (error) {
+             } catch (error) {
 
             alert(
                 "Error: " + error.message
             );
 
-
-                } finally {
+        } finally {
 
             button.disabled = false;
 
@@ -656,6 +655,7 @@ document.getElementById("authForm").addEventListener(
                 registerMode
                     ? "CREATE ACCOUNT"
                     : "LOGIN";
+
         }
 
     }
