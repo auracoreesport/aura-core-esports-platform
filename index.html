@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aura Core Esports</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: #08070d;
+    color: white;
+}
+
+nav {
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 7%;
+    background: #0d0b14;
+    border-bottom: 1px solid #24202f;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: 900;
+}
+
+.logo span {
+    color: #9b5cff;
+}
+
+.nav-button,
+.primary,
+.auth-button {
+    background: #9b5cff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 20px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.hero {
+    min-height: 75vh;
+    display: flex;
+    align-items: center;
+    padding: 70px 8%;
+    background:
+        radial-gradient(circle at 75% 40%, #3c176d 0, transparent 35%),
+        #08070d;
+}
+
+.hero-content {
+    max-width: 700px;
+}
+
+.badge {
+    display: inline-block;
+    background: #191322;
+    border: 1px solid #6c3caf;
+    padding: 8px 14px;
+    border-radius: 30px;
+    color: #c79cff;
+    margin-bottom: 20px;
+}
+
+h1 {
+    font-size: clamp(45px, 7vw, 85px);
+    line-height: .95;
+    margin-bottom: 25px;
+}
+
+h1 span {
+    color: #9b5cff;
+}
+
+.hero p {
+    color: #aaa4b5;
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.secondary {
+    padding: 12px 20px;
+    border-radius: 8px;
+    background: transparent;
+    color: white;
+    border: 1px solid #41394d;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+section {
+    padding: 70px 8%;
+}
+
+.section-title {
+    font-size: 35px;
+    margin-bottom: 35px;
+}
+
+.games,
+.tournaments {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.game,
+.tournament {
+    background: #100d17;
+    border: 1px solid #26212f;
+    border-radius: 15px;
+    padding: 30px;
+}
+
+.game:hover,
+.tournament:hover {
+    border-color: #9b5cff;
+    transform: translateY(-3px);
+    transition: .2s;
+}
+
+.game-icon {
+    font-size: 45px;
+    margin-bottom: 20px;
+}
+
+.game h3,
+.tournament h3 {
+    font-size: 25px;
+    margin-bottom: 10px;
+}
+
+.game p,
+.tournament p {
+    color: #9f99aa;
+    line-height: 1.7;
+}
+
+.status {
+    color: #6cff9b;
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+footer {
+    text-align: center;
+    padding: 35px;
+    color: #77717f;
+    border-top: 1px solid #24202f;
+}
+
+/* AUTH MODAL */
+
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.82);
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+}
+
+.modal-box {
+    width: 90%;
+    max-width: 430px;
+    background: #100d17;
+    border: 1px solid #352c43;
+    padding: 30px;
+    border-radius: 15px;
+}
+
+.modal-box h2 {
+    margin-bottom: 20px;
+}
+
+.close {
+    float: right;
+    cursor: pointer;
+    color: #aaa;
+    font-size: 25px;
+}
+
+.modal-box input {
+    width: 100%;
+    padding: 13px;
+    margin-bottom: 12px;
+    background: #08070d;
+    border: 1px solid #332c3c;
+    color: white;
+    border-radius: 7px;
+    outline: none;
+}
+
+.auth-button {
+    width: 100%;
+}
+
+.switch {
+    width: 100%;
+    margin-top: 15px;
+    background: none;
+    border: none;
+    color: #aaa;
+    cursor: pointer;
+}
+
+.switch:hover {
+    color: #c79cff;
+}
+
+.message {
+    margin-top: 15px;
+    text-align: center;
+    color: #c79cff;
+    min-height: 20px;
+}
+
+@media(max-width:800px) {
+    .games,
+    .tournaments {
+        grid-template-columns: 1fr;
+    }
+
+    .hero {
+        padding: 60px 6%;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<nav>
+    <div class="logo">AURA <span>CORE</span></div>
+    <button class="nav-button" id="navAuthButton">LOGIN</button>
+</nav>
+
+<section class="hero">
+    <div class="hero-content">
+
+        <div class="badge">AURA CORE ESPORTS</div>
+
+        <h1>
+            COMPETE.<br>
+            <span>CONQUER.</span><br>
+            CREATE.
+        </h1>
+
+        <p>
+            Compete in tournaments, build your team,
+            track your matches and climb the leaderboard.
+        </p>
+
+        <div class="hero-buttons">
+            <button class="primary" id="startButton">
+                GET STARTED
+            </button>
+
+            <button class="secondary" id="exploreButton">
+                EXPLORE GAMES
+            </button>
+        </div>
+
+    </div>
+</section>
+
+<section id="games">
+
+    <h2 class="section-title">SUPPORTED GAMES</h2>
+
+    <div class="games">
+
+        <div class="game">
+            <div class="game-icon">🔥</div>
+            <h3>Free Fire</h3>
+            <p>Squad tournaments • 4 players per team</p>
+        </div>
+
+        <div class="game">
+            <div class="game-icon">🎯</div>
+            <h3>BGMI</h3>
+            <p>Squad tournaments • 4 players per team</p>
+        </div>
+
+        <div class="game">
+            <div class="game-icon">⚡</div>
+            <h3>Valorant</h3>
+            <p>Competitive tournaments • 5 players per team</p>
+        </div>
+
+    </div>
+</section>
+
+<section>
+
+    <h2 class="section-title">UPCOMING TOURNAMENTS</h2>
+
+    <div class="tournaments">
+
+        <div class="tournament">
+            <div class="status">● REGISTRATION OPEN</div>
+            <h3>Free Fire Tournament</h3>
+            <p>
+                4-player squads<br>
+                Multiple matches<br>
+                Registration coming soon
+            </p>
+        </div>
+
+        <div class="tournament">
+            <div class="status">● REGISTRATION OPEN</div>
+            <h3>BGMI Tournament</h3>
+            <p>
+                4-player squads<br>
+                Competitive matches<br>
+                Registration coming soon
+            </p>
+        </div>
+
+        <div class="tournament">
+            <div class="status">● REGISTRATION OPEN</div>
+            <h3>Valorant Tournament</h3>
+            <p>
+                5-player teams<br>
+                Competitive matches<br>
+                Registration coming soon
+            </p>
+        </div>
+
+    </div>
+</section>
+
+<footer>
+    © 2026 Aura Core Esports • Compete. Conquer. Create.
+</footer>
+
+
+<!-- AUTH MODAL -->
+
+<div class="modal" id="authModal">
+
+    <div class="modal-box">
+
+        <span class="close" id="closeButton">×</span>
+
+        <h2 id="authTitle">Login</h2>
+
+        <form id="authForm">
+
+            <input
+                type="text"
+                id="username"
+                placeholder="Username"
+                style="display:none"
+            >
+
+            <input
+                type="email"
+                id="email"
+                placeholder="Email"
+                required
+            >
+
+            <input
+                type="password"
+                id="password"
+                placeholder="Password"
+                required
+            >
+
+            <button
+                type="submit"
+                class="auth-button"
+                id="authButton"
+            >
+                LOGIN
+            </button>
+
+        </form>
+
+        <button
+            type="button"
+            class="switch"
+            id="switchButton"
+        >
+            Don't have an account? Register
+        </button>
+
+        <div class="message" id="message"></div>
+
+    </div>
+</div>
+
+
+<script>
+
+/* ================================
+   SUPABASE
+================================ */
+
+const SUPABASE_URL =
+    "https://lhwwplkxegkedlcgdxil.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_aQlhnCTO4O1iRDqdoqWBzQ_-75xuvVc";
+
+const supabaseClient =
+    supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+/* ================================
+   ELEMENTS
+================================ */
+
+const authModal =
+    document.getElementById("authModal");
+
+const authForm =
+    document.getElementById("authForm");
+
+const authTitle =
+    document.getElementById("authTitle");
+
+const authButton =
+    document.getElementById("authButton");
+
+const switchButton =
+    document.getElementById("switchButton");
+
+const closeButton =
+    document.getElementById("closeButton");
+
+const usernameInput =
+    document.getElementById("username");
+
+const emailInput =
+    document.getElementById("email");
+
+const passwordInput =
+    document.getElementById("password");
+
+const message =
+    document.getElementById("message");
+
+const navAuthButton =
+    document.getElementById("navAuthButton");
+
+const startButton =
+    document.getElementById("startButton");
+
+const exploreButton =
+    document.getElementById("exploreButton");
+
+
+/* ================================
+   STATE
+================================ */
+
+let registerMode = false;
+
+
+/* ================================
+   AUTH MODAL
+================================ */
+
+function openAuth() {
+    authModal.style.display = "flex";
+    message.textContent = "";
+}
+
+function closeAuth() {
+    authModal.style.display = "none";
+    message.textContent = "";
+}
+
+
+/* ================================
+   SWITCH LOGIN / REGISTER
+================================ */
+
+function updateAuthMode() {
+
+    if (registerMode) {
+
+        authTitle.textContent =
+            "Create Account";
+
+        authButton.textContent =
+            "CREATE ACCOUNT";
+
+        switchButton.textContent =
+            "Already have an account? Login";
+
+        usernameInput.style.display =
+            "block";
+
+        usernameInput.required =
+            true;
+
+    } else {
+
+        authTitle.textContent =
+            "Login";
+
+        authButton.textContent =
+            "LOGIN";
+
+        switchButton.textContent =
+            "Don't have an account? Register";
+
+        usernameInput.style.display =
+            "none";
+
+        usernameInput.required =
+            false;
+    }
+}
+
+
+switchButton.addEventListener(
+    "click",
+    function() {
+
+        registerMode =
+            !registerMode;
+
+        updateAuthMode();
+    }
+);
+
+
+/* ================================
+   BUTTONS
+================================ */
+
+navAuthButton.addEventListener(
+    "click",
+    function() {
+
+        if (
+            navAuthButton.textContent === "LOGOUT"
+        ) {
+            logoutUser();
+        } else {
+            openAuth();
+        }
+
+    }
+);
+
+
+startButton.addEventListener(
+    "click",
+    openAuth
+);
+
+
+closeButton.addEventListener(
+    "click",
+    closeAuth
+);
+
+
+exploreButton.addEventListener(
+    "click",
+    function() {
+
+        document
+            .getElementById("games")
+            .scrollIntoView({
+                behavior: "smooth"
+            });
+
+    }
+);
+
+
+/* ================================
+   LOGIN / REGISTER
+================================ */
+
+authForm.addEventListener(
+    "submit",
+    async function(event) {
+
+        event.preventDefault();
+
+        message.textContent = "";
+
+        const email =
+            emailInput.value.trim();
+
+        const password =
+            passwordInput.value;
+
+        const username =
+            usernameInput.value.trim();
+
+        authButton.disabled = true;
+
+        authButton.textContent =
+            registerMode
+                ? "CREATING..."
+                : "LOGGING IN...";
+
+        try {
+
+            /* REGISTER */
+
+            if (registerMode) {
+
+                if (!username) {
+                    throw new Error(
+                        "Please enter a username."
+                    );
+                }
+
+                if (password.length < 6) {
+                    throw new Error(
+                        "Password must be at least 6 characters."
+                    );
+                }
+
+                const result =
+                    await supabaseClient.auth.signUp({
+
+                        email: email,
+
+                        password: password,
+
+                        options: {
+                            data: {
+                                username: username
+                            }
+                        }
+
+                    });
+
+                if (result.error) {
+                    throw result.error;
+                }
+
+                alert(
+                    "Account created successfully! You can now login."
+                );
+
+                authForm.reset();
+
+                registerMode = false;
+
+                updateAuthMode();
+
+                closeAuth();
+
+            }
+
+            /* LOGIN */
+
+            else {
+
+                const result =
+                    await supabaseClient.auth.signInWithPassword({
+
+                        email: email,
+
+                        password: password
+
+                    });
+
+                if (result.error) {
+                    throw result.error;
+                }
+
+                const user =
+                    result.data.user;
+
+                const isAdmin =
+                    await checkAdmin(user.id);
+
+                if (isAdmin) {
+
+                    alert(
+                        "Admin login successful! Welcome to Aura Core."
+                    );
+
+                    window.location.href =
+                        "admin.html";
+
+                } else {
+
+                    alert(
+                        "Login successful! Welcome to Aura Core Esports."
+                    );
+
+                    closeAuth();
+
+                    updateNavButton();
+                }
+
+            }
+
+        } catch (error) {
+
+            console.error(error);
+
+            message.textContent =
+                error.message;
+
+            alert(
+                "Error: " + error.message
+            );
+
+        } finally {
+
+            authButton.disabled = false;
+
+            updateAuthMode();
+
+        }
+
+    }
+);
+
+
+/* ================================
+   ADMIN CHECK
+================================ */
+
+async function checkAdmin(userId) {
+
+    const result =
+        await supabaseClient
+            .from("admins")
+            .select("id")
+            .eq("id", userId)
+            .maybeSingle();
+
+    if (result.error) {
+
+        console.error(
+            "Admin check error:",
+            result.error
+        );
+
+        return false;
+    }
+
+    return !!result.data;
+}
+
+
+/* ================================
+   NAVIGATION LOGIN STATE
+================================ */
+
+async function updateNavButton() {
+
+    const result =
+        await supabaseClient.auth.getSession();
+
+    if (result.error) {
+        console.error(result.error);
+        return;
+    }
+
+    if (result.data.session) {
+
+        navAuthButton.textContent =
+            "LOGOUT";
+
+    } else {
+
+        navAuthButton.textContent =
+            "LOGIN";
+
+    }
+}
+
+
+/* ================================
+   LOGOUT
+================================ */
+
+async function logoutUser() {
+
+    const result =
+        await supabaseClient.auth.signOut();
+
+    if (result.error) {
+
+        alert(
+            "Logout error: " +
+            result.error.message
+        );
+
+        return;
+    }
+
+    alert(
+        "Logged out successfully."
+    );
+
+    updateNavButton();
+}
+
+
+/* ================================
+   START
+================================ */
+
+updateAuthMode();
+updateNavButton();
+
+</script>
+
+</body>
+</html>
