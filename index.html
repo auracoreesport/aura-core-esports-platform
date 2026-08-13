@@ -878,6 +878,17 @@ async function loadTournaments() {
 
         card.className = "tournament";
 
+        card.style.cursor = "pointer";
+
+card.addEventListener("click", function () {
+    alert(
+        "Tournament: " + (tournament.name || "Tournament") +
+        "\nGame: " + (tournament.game || "N/A") +
+        "\nDate: " + (tournament.date || "TBA") +
+        "\nEntry Fee: ₹" + (tournament.entry_fee ?? 0) +
+        "\nPrize Pool: ₹" + (tournament.prize_pool ?? 0)
+    );
+});
         card.innerHTML = `
             <div class="status">
                 ● ${escapeHTML(tournament.status || "OPEN")}
