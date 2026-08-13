@@ -818,7 +818,88 @@ async function logoutUser() {
 updateAuthMode();
 updateNavButton();
 loadTournaments();
+function escapeHTML(value) {
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
 
+async function loadTournaments() {
+
+    const container =
+        document.getElementById("tournamentList");
+
+    if (!container) return;
+
+    const result =
+        await supabaseClient
+            .from("tournaments")
+            .select(`
+                id,
+                name,
+                game,
+                date,
+                entry_fee,
+                prize_pool,
+                status
+            `)
+            .order("date", {
+                ascending: true
+            });
+
+    if (result.error) {
+
+        console.error(
+            "Tournament loading error:",
+            result.error
+        );
+
+        container.innerHTML =
+            "<p style='color:#ff7777;'>Unable to load tournaments.</p>";
+
+        return;
+    }
+
+    if (!result.data || result.data.length === 0) {
+
+        container.innerHTML =
+            "<p style='color:#aaa4b5;'>No tournaments available right now.</p>";
+
+        return;
+    }
+
+    container.innerHTML = "";
+
+    result.data.forEach(function(tournament) {
+
+        const card =
+            document.createElement("div");
+
+        card.className = "tournament";
+
+        card.innerHTML = `
+            <div class="status">
+                ● ${escapeHTML(tournament.status || "OPEN")}
+            </div>
+
+            <h3>
+                ${escapeHTML(tournament.name || "Tournament")}
+            </h3>
+
+            <p>
+                Game: ${escapeHTML(tournament.game || "N/A")}<br>
+                Date: ${escapeHTML(tournament.date || "TBA")}<br>
+                Entry Fee: ₹${escapeHTML(String(tournament.entry_fee ?? 0))}<br>
+                Prize Pool: ₹${escapeHTML(String(tournament.prize_pool ?? 0))}
+            </p>
+        `;
+
+        container.appendChild(card);
+    });
+}
 </script>
 
 </body>
