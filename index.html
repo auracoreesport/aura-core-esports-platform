@@ -880,14 +880,103 @@ async function loadTournaments() {
 
         card.style.cursor = "pointer";
 
-card.addEventListener("click", function () {
-    alert(
-        "Tournament: " + (tournament.name || "Tournament") +
-        "\nGame: " + (tournament.game || "N/A") +
-        "\nDate: " + (tournament.date || "TBA") +
-        "\nEntry Fee: ₹" + (tournament.entry_fee ?? 0) +
-        "\nPrize Pool: ₹" + (tournament.prize_pool ?? 0)
-    );
+card.addEventListener("click", async function () {
+
+    const sessionResult =
+        await supabaseClient.auth.getSession();
+
+    if (sessionResult.error) {
+        alert("Unable to check login.");
+        return;
+    }
+
+    const session =
+        sessionResult.data.session;
+
+    if (!session) {
+        alert("Please login first to register for this tournament.");
+        openAuth();
+        return;
+    }
+
+    const user =
+        session.user;
+
+    const teamName =
+        prompt(
+            "Enter your team name for " +
+            (tournament.name || "this tournament")
+        );
+
+    if (!teamName || !teamName.trim()) {
+        return;
+    }
+
+    const captainName =
+        user.user_metadata?.username ||
+        user.email ||
+        "Captain";
+
+    try {
+
+        /* CREATE TEAM */
+
+        const teamResult =
+            await supabaseClient
+                .from("teams")
+                .insert({
+                    name: teamName.trim(),
+                    game: tournament.game,
+                    captain_id: user.id
+                })
+                .select("id")
+                .single();
+
+        if (teamResult.error) {
+            throw teamResult.error;
+        }
+
+        const teamId =
+            teamResult.data.id;
+
+        /* REGISTER TEAM */
+
+        const registrationResult =
+            await supabaseClient
+                .from("registrations")
+                .insert({
+                    tournament_id: tournament.id,
+                    team_id: teamId,
+                    status: "pending",
+                    team_name: teamName.trim(),
+                    captain: captainName
+                });
+
+        if (registrationResult.error) {
+            throw registrationResult.error;
+        }
+
+        alert(
+            "Registration successful! 🎉\n\n" +
+            "Tournament: " +
+            tournament.name +
+            "\nTeam: " +
+            teamName.trim()
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Registration error:",
+            error
+        );
+
+        alert(
+            "Registration failed:\n" +
+            error.message
+        );
+    }
+
 });
         card.innerHTML = `
             <div class="status">
