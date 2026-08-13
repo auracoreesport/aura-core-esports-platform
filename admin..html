@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Aura Core Admin</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: #08070d;
+    color: white;
+}
+
+header {
+    background: #0d0b14;
+    border-bottom: 1px solid #292333;
+    padding: 20px 7%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.logo span {
+    color: #9b5cff;
+}
+
+button {
+    cursor: pointer;
+}
+
+.logout {
+    background: #9b5cff;
+    color: white;
+    border: none;
+    padding: 11px 20px;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+main {
+    padding: 45px 7%;
+}
+
+h1 {
+    font-size: 42px;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    color: #aaa4b5;
+    margin-bottom: 35px;
+}
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.card {
+    background: #100d17;
+    border: 1px solid #292333;
+    border-radius: 15px;
+    padding: 30px;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    border-color: #9b5cff;
+}
+
+.card h2 {
+    color: #9b5cff;
+    margin-bottom: 10px;
+}
+
+.card p {
+    color: #aaa4b5;
+}
+
+.panel {
+    display: none;
+    margin-top: 30px;
+    background: #100d17;
+    border: 1px solid #292333;
+    border-radius: 15px;
+    padding: 30px;
+}
+
+.panel.active {
+    display: block;
+}
+
+.panel h2 {
+    margin-bottom: 20px;
+}
+
+input,
+select {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 12px;
+    background: #08070d;
+    color: white;
+    border: 1px solid #332c3c;
+    border-radius: 7px;
+}
+
+.action {
+    background: #9b5cff;
+    color: white;
+    border: none;
+    padding: 12px 18px;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+.back {
+    background: transparent;
+    color: white;
+    border: 1px solid #41394d;
+    padding: 11px 18px;
+    border-radius: 8px;
+    margin-left: 8px;
+}
+
+.item {
+    background: #08070d;
+    border: 1px solid #292333;
+    border-radius: 10px;
+    padding: 18px;
+    margin-top: 12px;
+}
+
+.item h3 {
+    margin-bottom: 8px;
+}
+
+.item p {
+    color: #aaa4b5;
+    line-height: 1.6;
+}
+
+.delete {
+    background: #c0392b;
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    margin-top: 12px;
+}
+
+.empty {
+    color: #aaa4b5;
+    margin-top: 15px;
+}
+
+@media(max-width:800px) {
+
+    .cards {
+        grid-template-columns: 1fr;
+    }
+
+    main {
+        padding: 30px 5%;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<div class="logo">
+AURA <span>CORE</span> ADMIN
+</div>
+
+<button class="logout" id="logout">
+LOGOUT
+</button>
+
+</header>
+
+
+<main>
+
+<h1>Admin Dashboard 👑</h1>
+
+<p class="subtitle">
+Manage Aura Core Esports.
+</p>
+
+
+<div class="cards">
+
+<div class="card" id="tournamentCard">
+
+<h2>🏆 Tournaments</h2>
+
+<p>
+Create and manage tournaments.
+</p>
+
+</div>
+
+
+<div class="card" id="playersCard">
+
+<h2>👥 Players</h2>
+
+<p>
+View registered players.
+</p>
+
+</div>
+
+
+<div class="card" id="registrationCard">
+
+<h2>📋 Registrations</h2>
+
+<p>
+View tournament registrations.
+</p>
+
+</div>
+
+</div>
+
+
+<!-- TOURNAMENTS -->
+
+<div class="panel" id="tournamentPanel">
+
+<h2>🏆 Tournament Management</h2>
+
+<input
+id="tournamentName"
+placeholder="Tournament name"
+>
+
+<select id="tournamentGame">
+
+<option value="Free Fire">
+Free Fire
+</option>
+
+<option value="BGMI">
+BGMI
+</option>
+
+<option value="Valorant">
+Valorant
+</option>
+
+</select>
+
+<input
+id="tournamentDate"
+type="date"
+>
+
+<input
+id="entryFee"
+type="number"
+placeholder="Entry fee"
+>
+
+<input
+id="prizePool"
+type="number"
+placeholder="Prize pool"
+>
+
+<button
+class="action"
+id="createTournament"
+>
+CREATE TOURNAMENT
+</button>
+
+<button
+class="back"
+onclick="closePanels()"
+>
+BACK
+</button>
+
+<div id="tournamentList"></div>
+
+</div>
+
+
+<!-- PLAYERS -->
+
+<div class="panel" id="playersPanel">
+
+<h2>👥 Players</h2>
+
+<div id="playersList"></div>
+
+<button
+class="back"
+onclick="closePanels()"
+>
+BACK
+</button>
+
+</div>
+
+
+<!-- REGISTRATIONS -->
+
+<div class="panel" id="registrationPanel">
+
+<h2>📋 Registrations</h2>
+
+<div id="registrationList"></div>
+
+<button
+class="back"
+onclick="closePanels()"
+>
+BACK
+</button>
+
+</div>
+
+</main>
+
+
+<script>
+
+/* =========================
+SUPABASE
+========================= */
+
+const SUPABASE_URL =
+"https://lhwwplkxegkedlcgdxil.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_aQlhnCTO4O1iRDqdoqWBzQ_-75xuvVc";
+
+const supabaseClient =
+supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+
+/* =========================
+ELEMENTS
+========================= */
+
+const tournamentPanel =
+document.getElementById("tournamentPanel");
+
+const playersPanel =
+document.getElementById("playersPanel");
+
+const registrationPanel =
+document.getElementById("registrationPanel");
+
+
+/* =========================
+PANELS
+========================= */
+
+function closePanels() {
+
+    tournamentPanel.classList.remove("active");
+
+    playersPanel.classList.remove("active");
+
+    registrationPanel.classList.remove("active");
+
+}
+
+
+function showPanel(panel) {
+
+    closePanels();
+
+    panel.classList.add("active");
+
+}
+
+
+/* =========================
+TOURNAMENT BUTTON
+========================= */
+
+document
+.getElementById("tournamentCard")
+.addEventListener("click", function() {
+
+    showPanel(tournamentPanel);
+
+    loadTournaments();
+
+});
+
+
+/* =========================
+PLAYERS BUTTON
+========================= */
+
+document
+.getElementById("playersCard")
+.addEventListener("click", function() {
+
+    showPanel(playersPanel);
+
+    loadPlayers();
+
+});
+
+
+/* =========================
+REGISTRATIONS BUTTON
+========================= */
+
+document
+.getElementById("registrationCard")
+.addEventListener("click", function() {
+
+    showPanel(registrationPanel);
+
+    loadRegistrations();
+
+});
+
+
+/* =========================
+CREATE TOURNAMENT
+========================= */
+
+document
+.getElementById("createTournament")
+.addEventListener("click", async function() {
+
+    const name =
+    document.getElementById("tournamentName").value.trim();
+
+    const game =
+    document.getElementById("tournamentGame").value;
+
+    const date =
+    document.getElementById("tournamentDate").value;
+
+    const entryFee =
+    Number(document.getElementById("entryFee").value || 0);
+
+    const prizePool =
+    Number(document.getElementById("prizePool").value || 0);
+
+
+    if (!name) {
+
+        alert("Enter a tournament name.");
+
+        return;
+
+    }
+
+
+    const result =
+    await supabaseClient
+    .from("tournaments")
+    .insert({
+
+        name: name,
+
+        game: game,
+
+        date: date || null,
+
+        entry_fee: entryFee,
+
+        prize_pool: prizePool,
+
+        status: "OPEN"
+
+    });
+
+
+    if (result.error) {
+
+        alert(
+            "Error: " +
+            result.error.message
+        );
+
+        return;
+
+    }
+
+
+    alert("Tournament created successfully!");
+
+
+    document
+    .getElementById("tournamentName")
+    .value = "";
+
+    document
+    .getElementById("tournamentDate")
+    .value = "";
+
+    document
+    .getElementById("entryFee")
+    .value = "";
+
+    document
+    .getElementById("prizePool")
+    .value = "";
+
+
+    loadTournaments();
+
+});
+
+
+/* =========================
+LOAD TOURNAMENTS
+========================= */
+
+async function loadTournaments() {
+
+    const container =
+    document.getElementById("tournamentList");
+
+    container.innerHTML =
+    "<p class='empty'>Loading tournaments...</p>";
+
+
+    const result =
+    await supabaseClient
+    .from("tournaments")
+    .select("*")
+    .order("created_at", {
+        ascending: false
+    });
+
+
+    if (result.error) {
+
+        container.innerHTML =
+        "<p class='empty'>" +
+        result.error.message +
+        "</p>";
+
+        return;
+
+    }
+
+
+    if (!result.data.length) {
+
+        container.innerHTML =
+        "<p class='empty'>No tournaments yet.</p>";
+
+        return;
+
+    }
+
+
+    container.innerHTML = "";
+
+
+    result.data.forEach(function(tournament) {
+
+        const item =
+        document.createElement("div");
+
+        item.className = "item";
+
+
+        item.innerHTML = `
+
+            <h3>${escapeHTML(tournament.name)}</h3>
+
+            <p>
+            Game: ${escapeHTML(tournament.game)}<br>
+            Date: ${tournament.date || "Not set"}<br>
+            Entry Fee: ₹${tournament.entry_fee}<br>
+            Prize Pool: ₹${tournament.prize_pool}<br>
+            Status: ${escapeHTML(tournament.status)}
+            </p>
+
+            <button
+            class="delete"
+            onclick="deleteTournament(${tournament.id})"
+            >
+            DELETE
+            </button>
+
+        `;
+
+
+        container.appendChild(item);
+
+    });
+
+}
+
+
+/* =========================
+DELETE TOURNAMENT
+========================= */
+
+async function deleteTournament(id) {
+
+    if (
+        !confirm(
+            "Delete this tournament?"
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    const result =
+    await supabaseClient
+    .from("tournaments")
+    .delete()
+    .eq("id", id);
+
+
+    if (result.error) {
+
+        alert(
+            "Error: " +
+            result.error.message
+        );
+
+        return;
+
+    }
+
+
+    loadTournaments();
+
+}
+
+
+/* =========================
+LOAD PLAYERS
+========================= */
+
+async function loadPlayers() {
+
+    const container =
+    document.getElementById("playersList");
+
+    container.innerHTML =
+    "<p class='empty'>Loading players...</p>";
+
+
+    const result =
+    await supabaseClient
+    .from("players")
+    .select("*")
+    .order("created_at", {
+        ascending: false
+    });
+
+
+    if (result.error) {
+
+        container.innerHTML =
+        "<p class='empty'>" +
+        result.error.message +
+        "</p>";
+
+        return;
+
+    }
+
+
+    if (!result.data.length) {
+
+        container.innerHTML =
+        "<p class='empty'>No players found.</p>";
+
+        return;
+
+    }
+
+
+    container.innerHTML = "";
+
+
+    result.data.forEach(function(player) {
+
+        const item =
+        document.createElement("div");
+
+        item.className = "item";
+
+
+        item.innerHTML = `
+
+            <h3>${escapeHTML(player.username)}</h3>
+
+            <p>
+            Email: ${escapeHTML(player.email || "N/A")}<br>
+            Game: ${escapeHTML(player.game || "N/A")}
+            </p>
+
+        `;
+
+
+        container.appendChild(item);
+
+    });
+
+}
+
+
+/* =========================
+LOAD REGISTRATIONS
+========================= */
+
+async function loadRegistrations() {
+
+    const container =
+    document.getElementById("registrationList");
+
+    container.innerHTML =
+    "<p class='empty'>Loading registrations...</p>";
+
+
+    const result =
+    await supabaseClient
+    .from("registrations")
+    .select(`
+        id,
+        team_name,
+        captain_name,
+        email,
+        created_at,
+        tournaments (
+            name,
+            game
+        )
+    `)
+    .order("created_at", {
+        ascending: false
+    });
+
+
+    if (result.error) {
+
+        container.innerHTML =
+        "<p class='empty'>" +
+        result.error.message +
+        "</p>";
+
+        return;
+
+    }
+
+
+    if (!result.data.length) {
+
+        container.innerHTML =
+        "<p class='empty'>
+        No registrations yet.
+        </p>";
+
+        return;
+
+    }
+
+
+    container.innerHTML = "";
+
+
+    result.data.forEach(function(registration) {
+
+        const tournament =
+        registration.tournaments;
+
+
+        const item =
+        document.createElement("div");
+
+        item.className = "item";
+
+
+        item.innerHTML = `
+
+            <h3>
+            ${escapeHTML(registration.team_name)}
+            </h3>
+
+            <p>
+            Tournament:
+            ${escapeHTML(tournament?.name || "Unknown")}<br>
+
+            Game:
+            ${escapeHTML(tournament?.game || "Unknown")}<br>
+
+            Captain:
+            ${escapeHTML(registration.captain_name || "N/A")}<br>
+
+            Email:
+            ${escapeHTML(registration.email || "N/A")}
+            </p>
+
+        `;
+
+
+        container.appendChild(item);
+
+    });
+
+}
+
+
+/* =========================
+HTML SECURITY
+========================= */
+
+function escapeHTML(value) {
+
+    return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+}
+
+
+/* =========================
+LOGOUT
+========================= */
+
+document
+.getElementById("logout")
+.addEventListener("click", async function() {
+
+    await supabaseClient.auth.signOut();
+
+    window.location.href =
+    "index.html";
+
+});
+
+
+/* =========================
+ADMIN SECURITY
+========================= */
+
+async function checkAdmin() {
+
+    const result =
+    await supabaseClient.auth.getSession();
+
+
+    if (
+        result.error ||
+        !result.data.session
+    ) {
+
+        window.location.href =
+        "index.html";
+
+        return;
+
+    }
+
+
+    const user =
+    result.data.session.user;
+
+
+    const admin =
+    await supabaseClient
+    .from("admins")
+    .select("id")
+    .eq("id", user.id)
+    .maybeSingle();
+
+
+    if (
+        admin.error ||
+        !admin.data
+    ) {
+
+        await supabaseClient.auth.signOut();
+
+        window.location.href =
+        "index.html";
+
+    }
+
+}
+
+
+checkAdmin();
+
+</script>
+
+</body>
+</html>
