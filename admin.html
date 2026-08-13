@@ -753,90 +753,103 @@ LOAD REGISTRATIONS
 async function loadRegistrations() {
 
     const container =
-    document.getElementById("registrationList");
+        document.getElementById("registrationList");
 
     container.innerHTML =
-    "<p class='empty'>Loading registrations...</p>";
-
+        "<p class='empty'>Loading registrations...</p>";
 
     const result =
-    await supabaseClient
-    .from("registrations")
-    .select(`
-        id,
-        team_name,
-        captain_name,
-        email,
-        created_at,
-        tournaments (
-            name,
-            game
-        )
-    `)
-    .order("created_at", {
-        ascending: false
-    });
-
+        await supabaseClient
+        .from("registrations")
+        .select(`
+            id,
+            tournament_id,
+            team_id,
+            status,
+            registered_at,
+            team_name,
+            captain,
+            tournaments (
+                name,
+                game
+            )
+        `)
+        .order("registered_at", {
+            ascending: false
+        });
 
     if (result.error) {
 
         container.innerHTML =
-        "<p class='empty'>" +
-        result.error.message +
-        "</p>";
+            "<p class='empty'>" +
+            escapeHTML(result.error.message) +
+            "</p>";
 
         return;
-
     }
 
-
-    if (!result.data.length) {
+    if (!result.data || !result.data.length) {
 
         container.innerHTML =
-"<p class='empty'>No registrations yet.</p>";
+            "<p class='empty'>No registrations yet.</p>";
 
         return;
-
     }
 
-
     container.innerHTML = "";
-
 
     result.data.forEach(function(registration) {
 
         const tournament =
-        registration.tournaments;
-
+            registration.tournaments;
 
         const item =
-        document.createElement("div");
+            document.createElement("div");
 
         item.className = "item";
-
 
         item.innerHTML = `
 
             <h3>
-            ${escapeHTML(registration.team_name)}
+                ${escapeHTML(
+                    registration.team_name || "Unnamed Team"
+                )}
             </h3>
 
             <p>
-            Tournament:
-            ${escapeHTML(tournament?.name || "Unknown")}<br>
 
-            Game:
-            ${escapeHTML(tournament?.game || "Unknown")}<br>
+                Tournament:
+                ${escapeHTML(
+                    tournament?.name || "Unknown"
+                )}
+                <br>
 
-            Captain:
-            ${escapeHTML(registration.captain_name || "N/A")}<br>
+                Game:
+                ${escapeHTML(
+                    tournament?.game || "Unknown"
+                )}
+                <br>
 
-            Email:
-            ${escapeHTML(registration.email || "N/A")}
+                Captain:
+                ${escapeHTML(
+                    registration.captain || "N/A"
+                )}
+                <br>
+
+                Status:
+                ${escapeHTML(
+                    registration.status || "N/A"
+                )}
+                <br>
+
+                Registered:
+                ${escapeHTML(
+                    registration.registered_at || "N/A"
+                )}
+
             </p>
 
         `;
-
 
         container.appendChild(item);
 
