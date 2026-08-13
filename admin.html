@@ -1,0 +1,451 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Aura Core Admin</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: #08070d;
+    color: white;
+}
+
+header {
+    background: #0d0b14;
+    border-bottom: 1px solid #292333;
+    padding: 20px 7%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.logo span {
+    color: #9b5cff;
+}
+
+.logout {
+    background: #9b5cff;
+    border: none;
+    color: white;
+    padding: 10px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+main {
+    padding: 50px 7%;
+}
+
+h1 {
+    font-size: 42px;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    color: #aaa4b5;
+    margin-bottom: 40px;
+}
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.card {
+    background: #100d17;
+    border: 1px solid #292333;
+    border-radius: 15px;
+    padding: 30px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.card:hover {
+    border-color: #9b5cff;
+    transform: translateY(-4px);
+}
+
+.card h2 {
+    color: #9b5cff;
+    margin-bottom: 10px;
+}
+
+.card p {
+    color: #aaa4b5;
+}
+
+.panel {
+    display: none;
+    margin-top: 35px;
+    background: #100d17;
+    border: 1px solid #292333;
+    border-radius: 15px;
+    padding: 30px;
+}
+
+.panel.active {
+    display: block;
+}
+
+.panel h2 {
+    margin-bottom: 15px;
+}
+
+.panel p {
+    color: #aaa4b5;
+    margin-bottom: 20px;
+}
+
+.action-button {
+    background: #9b5cff;
+    border: none;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.back-button {
+    background: transparent;
+    border: 1px solid #41394d;
+    color: white;
+    padding: 10px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+@media(max-width:800px) {
+    .cards {
+        grid-template-columns: 1fr;
+    }
+
+    main {
+        padding: 35px 5%;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+
+    <div class="logo">
+        AURA <span>CORE</span> ADMIN
+    </div>
+
+    <button class="logout" id="logoutButton">
+        LOGOUT
+    </button>
+
+</header>
+
+
+<main>
+
+    <h1>Admin Dashboard 👑</h1>
+
+    <p class="subtitle">
+        Manage Aura Core Esports from here.
+    </p>
+
+
+    <div class="cards">
+
+        <div class="card" id="tournamentCard">
+            <h2>🏆 Tournaments</h2>
+            <p>
+                Create and manage Aura Core tournaments.
+            </p>
+        </div>
+
+
+        <div class="card" id="playersCard">
+            <h2>👥 Players</h2>
+            <p>
+                Manage registered players and teams.
+            </p>
+        </div>
+
+
+        <div class="card" id="registrationsCard">
+            <h2>📋 Registrations</h2>
+            <p>
+                View tournament registrations.
+            </p>
+        </div>
+
+    </div>
+
+
+    <!-- TOURNAMENT PANEL -->
+
+    <div class="panel" id="tournamentPanel">
+
+        <h2>🏆 Tournament Management</h2>
+
+        <p>
+            Create tournaments, set game, entry fee,
+            dates and tournament status.
+        </p>
+
+        <button
+            class="action-button"
+            onclick="alert('Tournament creator will be added next.')"
+        >
+            CREATE TOURNAMENT
+        </button>
+
+        <button
+            class="back-button"
+            onclick="closePanels()"
+        >
+            BACK
+        </button>
+
+    </div>
+
+
+    <!-- PLAYERS PANEL -->
+
+    <div class="panel" id="playersPanel">
+
+        <h2>👥 Player Management</h2>
+
+        <p>
+            View and manage Aura Core players and teams.
+        </p>
+
+        <button
+            class="action-button"
+            onclick="alert('Player management will be connected to the database next.')"
+        >
+            VIEW PLAYERS
+        </button>
+
+        <button
+            class="back-button"
+            onclick="closePanels()"
+        >
+            BACK
+        </button>
+
+    </div>
+
+
+    <!-- REGISTRATION PANEL -->
+
+    <div class="panel" id="registrationsPanel">
+
+        <h2>📋 Tournament Registrations</h2>
+
+        <p>
+            View teams and players registered for tournaments.
+        </p>
+
+        <button
+            class="action-button"
+            onclick="alert('Registration management will be connected to the database next.')"
+        >
+            VIEW REGISTRATIONS
+        </button>
+
+        <button
+            class="back-button"
+            onclick="closePanels()"
+        >
+            BACK
+        </button>
+
+    </div>
+
+</main>
+
+
+<script>
+
+/* SUPABASE */
+
+const SUPABASE_URL =
+    "https://lhwwplkxegkedlcgdxil.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_aQlhnCTO4O1iRDqdoqWBzQ_-75xuvVc";
+
+const supabaseClient =
+    supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+/* ELEMENTS */
+
+const tournamentCard =
+    document.getElementById("tournamentCard");
+
+const playersCard =
+    document.getElementById("playersCard");
+
+const registrationsCard =
+    document.getElementById("registrationsCard");
+
+const tournamentPanel =
+    document.getElementById("tournamentPanel");
+
+const playersPanel =
+    document.getElementById("playersPanel");
+
+const registrationsPanel =
+    document.getElementById("registrationsPanel");
+
+
+/* PANELS */
+
+function closePanels() {
+
+    tournamentPanel.classList.remove("active");
+
+    playersPanel.classList.remove("active");
+
+    registrationsPanel.classList.remove("active");
+
+}
+
+
+function showPanel(panel) {
+
+    closePanels();
+
+    panel.classList.add("active");
+
+}
+
+
+/* CLICK EVENTS */
+
+tournamentCard.addEventListener(
+    "click",
+    function() {
+        showPanel(tournamentPanel);
+    }
+);
+
+
+playersCard.addEventListener(
+    "click",
+    function() {
+        showPanel(playersPanel);
+    }
+);
+
+
+registrationsCard.addEventListener(
+    "click",
+    function() {
+        showPanel(registrationsPanel);
+    }
+);
+
+
+/* LOGOUT */
+
+document
+    .getElementById("logoutButton")
+    .addEventListener(
+        "click",
+        async function() {
+
+            const result =
+                await supabaseClient.auth.signOut();
+
+            if (result.error) {
+
+                alert(
+                    "Logout error: " +
+                    result.error.message
+                );
+
+                return;
+            }
+
+            window.location.href =
+                "index.html";
+
+        }
+    );
+
+
+/* SECURITY CHECK */
+
+async function checkAdmin() {
+
+    const sessionResult =
+        await supabaseClient.auth.getSession();
+
+    if (
+        sessionResult.error ||
+        !sessionResult.data.session
+    ) {
+
+        window.location.href =
+            "index.html";
+
+        return;
+    }
+
+
+    const user =
+        sessionResult.data.session.user;
+
+
+    const adminResult =
+        await supabaseClient
+            .from("admins")
+            .select("id")
+            .eq("id", user.id)
+            .maybeSingle();
+
+
+    if (
+        adminResult.error ||
+        !adminResult.data
+    ) {
+
+        await supabaseClient.auth.signOut();
+
+        window.location.href =
+            "index.html";
+    }
+
+}
+
+
+checkAdmin();
+
+</script>
+
+</body>
+</html>
+```
