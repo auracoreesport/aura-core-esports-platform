@@ -815,9 +815,7 @@ async function logoutUser() {
 ================================ */
 
 
-updateAuthMode();
-updateNavButton();
-loadTournaments();
+
 function escapeHTML(value) {
     return String(value)
         .replace(/&/g, "&amp;")
@@ -899,7 +897,12 @@ async function loadTournaments() {
 
         container.appendChild(card);
     });
-}
+} 
+
+    updateAuthMode();
+updateNavButton();
+loadTournaments();
+    
 </script>
 
 </body>
