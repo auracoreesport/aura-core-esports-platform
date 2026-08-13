@@ -323,39 +323,14 @@ footer {
 
     <h2 class="section-title">UPCOMING TOURNAMENTS</h2>
 
-    <div class="tournaments">
+    <div class="tournaments" id="tournamentList">
 
-        <div class="tournament">
-            <div class="status">● REGISTRATION OPEN</div>
-            <h3>Free Fire Tournament</h3>
-            <p>
-                4-player squads<br>
-                Multiple matches<br>
-                Registration coming soon
-            </p>
-        </div>
-
-        <div class="tournament">
-            <div class="status">● REGISTRATION OPEN</div>
-            <h3>BGMI Tournament</h3>
-            <p>
-                4-player squads<br>
-                Competitive matches<br>
-                Registration coming soon
-            </p>
-        </div>
-
-        <div class="tournament">
-            <div class="status">● REGISTRATION OPEN</div>
-            <h3>Valorant Tournament</h3>
-            <p>
-                5-player teams<br>
-                Competitive matches<br>
-                Registration coming soon
-            </p>
-        </div>
+        <p style="color:#aaa4b5;">
+            Loading tournaments...
+        </p>
 
     </div>
+
 </section>
 
 <footer>
@@ -839,8 +814,10 @@ async function logoutUser() {
    START
 ================================ */
 
+
 updateAuthMode();
 updateNavButton();
+loadTournaments();
 
 </script>
 
