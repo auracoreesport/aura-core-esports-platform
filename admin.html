@@ -38,19 +38,18 @@ document.getElementById("createTournament").addEventListener("click",async()=>{c
 async function loadTournaments(){const c=document.getElementById("tournamentList");c.innerHTML="<p class='empty'>Loading tournaments...</p>";const r=await supabaseClient.from("tournaments").select("*").order("created_at",{ascending:false});if(r.error){c.innerHTML="<p class='empty'>"+escapeHTML(r.error.message)+"</p>";return}if(!r.data.length){c.innerHTML="<p class='empty'>No tournaments yet.</p>";return}c.innerHTML="";r.data.forEach(t=>{const item=document.createElement("div");item.className="item";item.innerHTML=`<h3>${escapeHTML(t.name)}</h3><p>Game: ${escapeHTML(t.game)}<br>Date: ${escapeHTML(t.date||"Not set")}<br>Entry Fee: ₹${escapeHTML(t.entry_fee)}<br>Prize Pool: ₹${escapeHTML(t.prize_pool)}<br>Status: ${escapeHTML(t.status)}</p><button class="delete" onclick="deleteTournament(${t.id})">DELETE</button>`;c.appendChild(item)})}
 async function deleteTournament(id){if(!confirm("Delete this tournament?"))return;const r=await supabaseClient.from("tournaments").delete().eq("id",id);if(r.error){alert("Error: "+r.error.message);return}loadTournaments()}
 
-/* Players section intentionally shows ONLY registered team names and their tournament/status. */
+/* PLAYERS = TEAM NAMES ONLY */
 async function loadPlayers(){
  const c=document.getElementById("playersList");
  c.innerHTML="<p class='empty'>Loading registered teams...</p>";
- const r=await supabaseClient.from("registrations").select("id,tournament_id,team_name,status,tournaments(name,game)").order("registered_at",{ascending:false});
+ const r=await supabaseClient.from("registrations").select("id,tournament_id,team_name,status").order("registered_at",{ascending:false});
  if(r.error){c.innerHTML="<p class='empty'>"+escapeHTML(r.error.message)+"</p>";return}
  if(!r.data?.length){c.innerHTML="<p class='empty'>No registered teams found.</p>";return}
  c.innerHTML=`<p class="small">${r.data.length} registered team${r.data.length===1?"":"s"} found.</p>`;
  r.data.forEach(reg=>{
-   const t=reg.tournaments;
    const item=document.createElement("div");
    item.className="item";
-   item.innerHTML=`<h3>${escapeHTML(reg.team_name||"Unnamed Team")}</h3><p>Tournament: ${escapeHTML(t?.name||"Unknown")}<br>Game: ${escapeHTML(t?.game||"Unknown")}</p><div class="status-badge status-${escapeHTML(String(reg.status||"pending").toLowerCase())}">STATUS: ${escapeHTML(String(reg.status||"pending").toUpperCase())}</div>`;
+   item.innerHTML=`<h3>${escapeHTML(reg.team_name||"Unnamed Team")}</h3><div class="status-badge status-${escapeHTML(String(reg.status||"pending").toLowerCase())}">STATUS: ${escapeHTML(String(reg.status||"pending").toUpperCase())}</div>`;
    c.appendChild(item);
  });
 }
