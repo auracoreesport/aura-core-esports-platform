@@ -15,11 +15,11 @@
 <h1>Admin Dashboard 👑</h1><p class="subtitle">Manage Aura Core Esports.</p>
 <div class="cards">
 <div class="card" id="tournamentCard"><h2>🏆 Tournaments</h2><p>Create and manage tournaments.</p></div>
-<div class="card" id="playersCard"><h2>👥 Players</h2><p>View players from tournament registrations.</p></div>
+<div class="card" id="playersCard"><h2>👥 Players</h2><p>View registered team names.</p></div>
 <div class="card" id="registrationCard"><h2>📋 Registrations</h2><p>View and approve tournament registrations.</p></div>
 </div>
 <div class="panel" id="tournamentPanel"><h2>🏆 Tournament Management</h2><input id="tournamentName" placeholder="Tournament name"><select id="tournamentGame"><option>Free Fire</option><option>BGMI</option><option>Valorant</option></select><input id="tournamentDate" type="date"><input id="entryFee" type="number" placeholder="Entry fee"><input id="prizePool" type="number" placeholder="Prize pool"><button class="action" id="createTournament">CREATE TOURNAMENT</button><button class="back" onclick="closePanels()">BACK</button><div id="tournamentList"></div></div>
-<div class="panel" id="playersPanel"><h2>👥 Registered Players</h2><div id="playersList"></div><button class="back" onclick="closePanels()">BACK</button></div>
+<div class="panel" id="playersPanel"><h2>👥 Registered Teams</h2><div id="playersList"></div><button class="back" onclick="closePanels()">BACK</button></div>
 <div class="panel" id="registrationPanel"><h2>📋 Registrations</h2><div id="registrationList"></div><button class="back" onclick="closePanels()">BACK</button></div>
 </main>
 <script>
@@ -38,36 +38,19 @@ document.getElementById("createTournament").addEventListener("click",async()=>{c
 async function loadTournaments(){const c=document.getElementById("tournamentList");c.innerHTML="<p class='empty'>Loading tournaments...</p>";const r=await supabaseClient.from("tournaments").select("*").order("created_at",{ascending:false});if(r.error){c.innerHTML="<p class='empty'>"+escapeHTML(r.error.message)+"</p>";return}if(!r.data.length){c.innerHTML="<p class='empty'>No tournaments yet.</p>";return}c.innerHTML="";r.data.forEach(t=>{const item=document.createElement("div");item.className="item";item.innerHTML=`<h3>${escapeHTML(t.name)}</h3><p>Game: ${escapeHTML(t.game)}<br>Date: ${escapeHTML(t.date||"Not set")}<br>Entry Fee: ₹${escapeHTML(t.entry_fee)}<br>Prize Pool: ₹${escapeHTML(t.prize_pool)}<br>Status: ${escapeHTML(t.status)}</p><button class="delete" onclick="deleteTournament(${t.id})">DELETE</button>`;c.appendChild(item)})}
 async function deleteTournament(id){if(!confirm("Delete this tournament?"))return;const r=await supabaseClient.from("tournaments").delete().eq("id",id);if(r.error){alert("Error: "+r.error.message);return}loadTournaments()}
 
-/* Players are stored inside registrations, not in the separate players table. */
+/* Players section intentionally shows ONLY registered team names and their tournament/status. */
 async function loadPlayers(){
  const c=document.getElementById("playersList");
- c.innerHTML="<p class='empty'>Loading registered players...</p>";
- const r=await supabaseClient.from("registrations").select("id,tournament_id,team_name,status,captain_name,captain_uid,player2_name,player2_uid,player3_name,player3_uid,player4_name,player4_uid,tournaments(name,game)").order("registered_at",{ascending:false});
+ c.innerHTML="<p class='empty'>Loading registered teams...</p>";
+ const r=await supabaseClient.from("registrations").select("id,tournament_id,team_name,status,tournaments(name,game)").order("registered_at",{ascending:false});
  if(r.error){c.innerHTML="<p class='empty'>"+escapeHTML(r.error.message)+"</p>";return}
- if(!r.data?.length){c.innerHTML="<p class='empty'>No registered players found.</p>";return}
- const players=[];
- const seen=new Set();
+ if(!r.data?.length){c.innerHTML="<p class='empty'>No registered teams found.</p>";return}
+ c.innerHTML=`<p class="small">${r.data.length} registered team${r.data.length===1?"":"s"} found.</p>`;
  r.data.forEach(reg=>{
-   const tournament=reg.tournaments;
-   const list=[
-     {name:reg.captain_name,uid:reg.captain_uid,role:"Captain"},
-     {name:reg.player2_name,uid:reg.player2_uid,role:"Player 2"},
-     {name:reg.player3_name,uid:reg.player3_uid,role:"Player 3"},
-     {name:reg.player4_name,uid:reg.player4_uid,role:"Player 4"}
-   ];
-   list.forEach(p=>{
-     if(!p.name && !p.uid)return;
-     const key=[reg.id,p.role].join(":");
-     if(seen.has(key))return;
-     seen.add(key);
-     players.push({...p,team:reg.team_name||"Unnamed Team",tournament:tournament?.name||"Unknown",game:tournament?.game||"Unknown",status:reg.status||"pending"});
-   });
- });
- if(!players.length){c.innerHTML="<p class='empty'>Registrations exist, but no player details have been entered.</p>";return}
- c.innerHTML=`<p class="small">${players.length} registered player entries found.</p>`;
- players.forEach(p=>{
-   const item=document.createElement("div");item.className="item";
-   item.innerHTML=`<h3>${escapeHTML(p.name||"Unnamed Player")}</h3><p>Role: ${escapeHTML(p.role)}<br>UID / Player ID: ${escapeHTML(p.uid||"N/A")}<br>Team: ${escapeHTML(p.team)}<br>Tournament: ${escapeHTML(p.tournament)}<br>Game: ${escapeHTML(p.game)}</p><div class="status-badge status-${escapeHTML(String(p.status).toLowerCase())}">REGISTRATION: ${escapeHTML(String(p.status).toUpperCase())}</div>`;
+   const t=reg.tournaments;
+   const item=document.createElement("div");
+   item.className="item";
+   item.innerHTML=`<h3>${escapeHTML(reg.team_name||"Unnamed Team")}</h3><p>Tournament: ${escapeHTML(t?.name||"Unknown")}<br>Game: ${escapeHTML(t?.game||"Unknown")}</p><div class="status-badge status-${escapeHTML(String(reg.status||"pending").toLowerCase())}">STATUS: ${escapeHTML(String(reg.status||"pending").toUpperCase())}</div>`;
    c.appendChild(item);
  });
 }
