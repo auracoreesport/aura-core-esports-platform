@@ -869,18 +869,246 @@ async function loadTournaments() {
         return;
     }
 
-    container.innerHTML = "";
+   card.innerHTML = `
+   card.addEventListener("click", async function () {
 
-    result.data.forEach(function(tournament) {
+    const sessionResult =
+        await supabaseClient.auth.getSession();
 
-        const card =
-            document.createElement("div");
+    if (sessionResult.error) {
+        alert("Unable to check login.");
+        return;
+    }
 
-        card.className = "tournament";
+    const session =
+        sessionResult.data.session;
 
-        card.style.cursor = "pointer";
+    if (!session) {
+        alert("Please login first to register for this tournament.");
+        openAuth();
+        return;
+    }
 
-card.addEventListener("click", async function () {
+    const user =
+        session.user;
+
+    /* =========================
+       TEAM DETAILS
+    ========================= */
+
+    const teamName =
+        prompt("Enter your TEAM NAME:");
+
+    if (!teamName || !teamName.trim()) {
+        return;
+    }
+
+    const captainName =
+        prompt("Enter CAPTAIN NAME:");
+
+    if (!captainName || !captainName.trim()) {
+        return;
+    }
+
+    const captainUID =
+        prompt("Enter CAPTAIN UID / PLAYER ID:");
+
+    if (!captainUID || !captainUID.trim()) {
+        return;
+    }
+
+    const whatsapp =
+        prompt("Enter CAPTAIN WHATSAPP NUMBER:");
+
+    if (!whatsapp || !whatsapp.trim()) {
+        return;
+    }
+
+
+    /* =========================
+       PLAYER 2
+    ========================= */
+
+    const player2Name =
+        prompt("PLAYER 2 - Enter Name:");
+
+    if (!player2Name || !player2Name.trim()) {
+        return;
+    }
+
+    const player2UID =
+        prompt("PLAYER 2 - Enter UID / Player ID:");
+
+    if (!player2UID || !player2UID.trim()) {
+        return;
+    }
+
+
+    /* =========================
+       PLAYER 3
+    ========================= */
+
+    const player3Name =
+        prompt("PLAYER 3 - Enter Name:");
+
+    if (!player3Name || !player3Name.trim()) {
+        return;
+    }
+
+    const player3UID =
+        prompt("PLAYER 3 - Enter UID / Player ID:");
+
+    if (!player3UID || !player3UID.trim()) {
+        return;
+    }
+
+
+    /* =========================
+       PLAYER 4
+    ========================= */
+
+    const player4Name =
+        prompt("PLAYER 4 - Enter Name:");
+
+    if (!player4Name || !player4Name.trim()) {
+        return;
+    }
+
+    const player4UID =
+        prompt("PLAYER 4 - Enter UID / Player ID:");
+
+    if (!player4UID || !player4UID.trim()) {
+        return;
+    }
+
+
+    /* =========================
+       REFERRAL CODE
+    ========================= */
+
+    const referralCode =
+        prompt(
+            "Enter REFERRAL CODE (optional):"
+        );
+
+
+    try {
+
+        /* =========================
+           CREATE TEAM
+        ========================= */
+
+        const teamResult =
+            await supabaseClient
+                .from("teams")
+                .insert({
+                    name: teamName.trim(),
+                    game: tournament.game,
+                    captain_id: user.id
+                })
+                .select("id")
+                .single();
+
+        if (teamResult.error) {
+            throw teamResult.error;
+        }
+
+        const teamId =
+            teamResult.data.id;
+
+
+        /* =========================
+           REGISTER TEAM
+        ========================= */
+
+        const registrationResult =
+            await supabaseClient
+                .from("registrations")
+                .insert({
+
+                    tournament_id:
+                        tournament.id,
+
+                    team_id:
+                        teamId,
+
+                    status:
+                        "pending",
+
+                    team_name:
+                        teamName.trim(),
+
+                    captain:
+                        captainName.trim(),
+
+                    captain_name:
+                        captainName.trim(),
+
+                    captain_uid:
+                        captainUID.trim(),
+
+                    whatsapp:
+                        whatsapp.trim(),
+
+                    player2_name:
+                        player2Name.trim(),
+
+                    player2_uid:
+                        player2UID.trim(),
+
+                    player3_name:
+                        player3Name.trim(),
+
+                    player3_uid:
+                        player3UID.trim(),
+
+                    player4_name:
+                        player4Name.trim(),
+
+                    player4_uid:
+                        player4UID.trim(),
+
+                    referral_code:
+                        referralCode
+                            ? referralCode.trim()
+                            : null
+                });
+
+
+        if (registrationResult.error) {
+            throw registrationResult.error;
+        }
+
+
+        /* =========================
+           SUCCESS
+        ========================= */
+
+        alert(
+            "Registration successful! 🎉\n\n" +
+            "Tournament: " +
+            tournament.name +
+            "\nTeam: " +
+            teamName.trim() +
+            "\nCaptain: " +
+            captainName.trim()
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Registration error:",
+            error
+        );
+
+        alert(
+            "Registration failed:\n" +
+            error.message
+        );
+    }
+
+});
 
     const sessionResult =
         await supabaseClient.auth.getSession();
